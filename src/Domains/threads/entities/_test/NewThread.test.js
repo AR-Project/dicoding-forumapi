@@ -16,6 +16,7 @@ describe('New Thread entities', () => {
     const payload = {
       title: 'Title inside incorrect Payload',
       body: 12345,
+      owner: {},
     };
 
     // Action & Assert
@@ -27,6 +28,7 @@ describe('New Thread entities', () => {
     const payload = {
       title: 'Title Inside Correct Payload',
       body: 'Body Content inside correct payload.',
+      owner: 'user-123'
     };
 
     // Action
@@ -36,6 +38,7 @@ describe('New Thread entities', () => {
     expect(newThread).toBeInstanceOf(NewThread);
     expect(newThread.title).toEqual(payload.title);
     expect(newThread.body).toEqual(payload.body);
+    expect(newThread.owner).toEqual(payload.owner);
   });
 
 })
