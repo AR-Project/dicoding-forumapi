@@ -1,4 +1,6 @@
 const InvariantError = require('./InvariantError');
+const AuthorizationError = require('./AuthorizationError');
+const AuthenticationError = require('./AuthenticationError')
 
 const DomainErrorTranslator = {
   translate(error) {
@@ -17,6 +19,10 @@ DomainErrorTranslator._directories = {
   'REFRESH_AUTHENTICATION_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('refresh token harus string'),
   'DELETE_AUTHENTICATION_USE_CASE.NOT_CONTAIN_REFRESH_TOKEN': new InvariantError('harus mengirimkan token refresh'),
   'DELETE_AUTHENTICATION_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('refresh token harus string'),
+  'CREDENTIALS.NOT_CONTAIN_NEEDED_PROPERTY': new AuthenticationError('Missing authentication'),
+  'CREDENTIALS.NOT_MEET_DATA_TYPE_SPECIFICATION': new AuthenticationError('Missing authentication'),
+  'NEW_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION' : new InvariantError('tidak bisa membuat thread baru, data tidak sesuai'),
+  'NEW_THREAD.NOT_CONTAIN_NEEDED_PROPERTY' : new InvariantError('tidak bisa membuat thread baru, data tidak sesuai')
 };
 
 module.exports = DomainErrorTranslator;
