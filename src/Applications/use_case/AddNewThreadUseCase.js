@@ -11,8 +11,10 @@ class AddNewThreadUseCase {
     const newCredentials = new Credentials(credentials);
     const {id: owner} = newCredentials;
 
-    // Sanitize thread
+    // Sanitize thread payload
     const newThread = new NewThread({...useCasePayload, owner});
+
+    // Action
     return this._threadRepository.addNewThread(newThread);
   }
 }
