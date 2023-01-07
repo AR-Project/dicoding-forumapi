@@ -12,8 +12,13 @@ const AddedThread = require('../../../Domains/threads/entities/AddedThread')
 // Repository
 const ThreadRepositoryPostgres = require('../ThreadRepositoryPostgres')
 
+// error / exception
+const InvariantError = require('../../../Commons/exceptions/InvariantError');
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
+
+
 describe('ThreadRepositoryPostgress', () =>{
-  beforeEach(async () => {
+  beforeAll(async () => {
     const user = {
       id : 'user-123', 
       username : 'dicoding', 
@@ -23,13 +28,12 @@ describe('ThreadRepositoryPostgress', () =>{
     await UsersTableTestHelper.addUser({...user});
   })
 
-  
   afterEach(async () => {
-    await UsersTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();
   })
-
+  
   afterAll(async () => {
+    await UsersTableTestHelper.cleanTable();
     await pool.end();
   })
 
@@ -72,6 +76,50 @@ describe('ThreadRepositoryPostgress', () =>{
         owner: newThread.owner
       }))
     })
+  })
 
+  describe('verifyThread function', () => { 
+    it('should throw NotFoundError when no thread is found', async () => {
+      // Arrange
+      const newThread = new NewThread({
+        title: 'A Thread Title',
+        body: 'Body content of a thread.',
+        owner: 'user-123'
+      })
+      const invalidThreadId = 'thread-999'
+
+      // repo and stub
+      const fakeIdGenerator = () => '123'
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
+      await threadRepositoryPostgres.addNewThread(newThread);
+
+      // Assert prepare
+      const thread = await ThreadsTableTestHelper.findThreadsById('thread-123');
+
+      // Assert 🙄
+      expect(thread).toHaveLength(1);
+      await expect( threadRepositoryPostgres.verifyThread(invalidThreadId)).rejects.toThrow(NotFoundError)
+    })
+
+    it('should not throw NotFoundError when thread is found', async () => { 
+      // Arrange
+      const newThread = new NewThread({
+        title: 'A Thread Title',
+        body: 'Body content of a thread.',
+        owner: 'user-123'
+      })
+      const validThreadId = 'thread-123'
+      // repo and stub
+      const fakeIdGenerator = () => '123'
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
+      await threadRepositoryPostgres.addNewThread(newThread);
+
+      // Assert prepare
+      const thread = await ThreadsTableTestHelper.findThreadsById(validThreadId);
+
+      // Assert 🙄
+      expect(thread).toHaveLength(1);
+      await expect( threadRepositoryPostgres.verifyThread(validThreadId)).resolves.not.toThrow(NotFoundError)
+    })
   })
 })
