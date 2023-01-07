@@ -12,7 +12,7 @@ class AddCommentUseCase {
     // verify parameter recieved
     this._verifyParameter(ownerId, threadId);
 
-    // verify thread using thread repository
+    // verify thread existence using threadRepository method
     await this._threadRepository.verifyThread(threadId);
 
     // No need to verify payload here since, gonna be sanitized 
