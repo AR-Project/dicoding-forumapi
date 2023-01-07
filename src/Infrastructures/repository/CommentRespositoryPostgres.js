@@ -1,4 +1,4 @@
-const CommentRepository = require("../../Domains/comments/CommentsRepository");
+const CommentRepository = require("../../Domains/comments/CommentRepository");
 
 const AddedComment = require('../../Domains/comments/entitites/AddedComment')
 

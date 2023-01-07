@@ -3,7 +3,7 @@ const Comment = require('../../../Domains/comments/entitites/Comment');
 const AddedComment = require('../../../Domains/comments/entitites/AddedComment');
 
 // Abstract Repository
-const CommentsRepository = require('../../../Domains/comments/CommentsRepository');
+const CommentRepository = require('../../../Domains/comments/CommentRepository');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 
 
@@ -17,7 +17,7 @@ describe('AddComment use case', () => {
       content: 'This is comment'
     }, ownerId = 'user-123', threadId = 'thread-123'
 
-    const mockCommentsRepository = new CommentsRepository();
+    const mockCommentRepository = new CommentRepository();
     const mockThreadRepository = new ThreadRepository();
 
     mockThreadRepository.verifyThread = jest.fn().mockImplementation(() => {
@@ -25,7 +25,7 @@ describe('AddComment use case', () => {
     })
 
     const addCommentUseCase = new AddCommentUseCase({
-      commentsRepository: mockCommentsRepository,
+      CommentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
     })
 
@@ -48,20 +48,20 @@ describe('AddComment use case', () => {
     })
 
     // create dependencies
-    const mockCommentsRepository = new CommentsRepository();
+    const mockCommentRepository = new CommentRepository();
     const mockThreadRepository = new ThreadRepository();
 
     // mocking needed function
     mockThreadRepository.verifyThread = jest.fn().mockImplementation(() => {
       return Promise.resolve()
     })
-    mockCommentsRepository.addComment = jest.fn().mockImplementation(() => {
+    mockCommentRepository.addComment = jest.fn().mockImplementation(() => {
       return Promise.resolve(expectedAddedComment)
     })
 
     // create use case instance
     const addCommentUseCase = new AddCommentUseCase({
-      commentsRepository: mockCommentsRepository,
+      CommentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
     })
 
@@ -71,7 +71,7 @@ describe('AddComment use case', () => {
     // Assert
     expect(addedComment).toStrictEqual(expectedAddedComment);
     expect(mockThreadRepository.verifyThread).toBeCalledWith(threadId);
-    expect(mockCommentsRepository.addComment).toBeCalledWith(new Comment({
+    expect(mockCommentRepository.addComment).toBeCalledWith(new Comment({
       content: useCasePayload.content,
       owner: ownerId,
       threadId: threadId
