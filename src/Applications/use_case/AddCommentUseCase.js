@@ -17,7 +17,7 @@ class AddCommentUseCase {
 
     // No need to verify payload here since, gonna be sanitized 
     // inside Comment entity.
-    const newComment = new Comment({...useCasePayload, owner: ownerId, threadId})
+    const newComment = new Comment({content: useCasePayload.content, owner: ownerId, threadId})
 
     // Finally invoke add comment and expect AddedComment in return
     return this._commentsRepository.addComment(newComment);
