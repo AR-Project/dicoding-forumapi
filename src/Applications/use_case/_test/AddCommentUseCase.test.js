@@ -3,7 +3,7 @@ const Comment = require('../../../Domains/comments/entitites/Comment');
 const AddedComment = require('../../../Domains/comments/entitites/AddedComment');
 
 // Abstract Repository
-const CommentsRepositories = require('../../../Domains/comments/CommentsRepositories');
+const CommentsRepository = require('../../../Domains/comments/CommentsRepository');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
 
 
@@ -17,7 +17,7 @@ describe('AddComment use case', () => {
       content: 'This is comment'
     }, ownerId = 'user-123', threadId = 'thread-123'
 
-    const mockCommentsRepository = new CommentsRepositories();
+    const mockCommentsRepository = new CommentsRepository();
     const mockThreadRepository = new ThreadRepository();
 
     mockThreadRepository.verifyThread = jest.fn().mockImplementation(() => {
@@ -48,7 +48,7 @@ describe('AddComment use case', () => {
     })
 
     // create dependencies
-    const mockCommentsRepository = new CommentsRepositories();
+    const mockCommentsRepository = new CommentsRepository();
     const mockThreadRepository = new ThreadRepository();
 
     // mocking needed function
