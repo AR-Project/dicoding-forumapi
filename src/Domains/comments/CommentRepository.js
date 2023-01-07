@@ -2,13 +2,13 @@ class CommentRepository {
   async addComment(comment) {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
-  async verifyComment(comment) {
+  async verifyComment(id) {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
-  async deleteComment(comment) {
+  async deleteComment(id) {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
-  async getReplies(comment) {
+  async getReplies(id) {
     throw new Error('COMMENT_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 }
