@@ -25,7 +25,7 @@ describe('AddComment use case', () => {
     })
 
     const addCommentUseCase = new AddCommentUseCase({
-      CommentRepository: mockCommentRepository,
+      commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
     })
 
@@ -61,7 +61,7 @@ describe('AddComment use case', () => {
 
     // create use case instance
     const addCommentUseCase = new AddCommentUseCase({
-      CommentRepository: mockCommentRepository,
+      commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
     })
 
