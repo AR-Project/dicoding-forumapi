@@ -38,7 +38,12 @@ const CommentsTableTestHelper = {
     
     // expected result is an array of rows
     return result.rows;
+  },
 
+  async countTotalComments(){
+    const result = await pool.query('SELECT COUNT(*) FROM comments')
+
+    return parseInt(result.rows[0].count);
   },
 
   async cleanTable() {
