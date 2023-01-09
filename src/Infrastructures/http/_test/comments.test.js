@@ -100,7 +100,41 @@ describe('/thread/{threadId}/comment endpoint', () => {
       expect(responseJson.status).toEqual('success');
       expect(responseJson.data.addedComment).toBeDefined();
     })
-   })
+  })
 
- })
+  describe('when DELETE /thread/{treadId}/comment/{commentId}', () => { 
+    it('should response 200 and soft-delete comment', async () => { 
+      // Arrange
+      const requestPayload = {
+        content: 'This is a comment'
+      };
+      const server = await createServer(container);
+      const addCommentResponse = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: requestPayload,
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      })
+      const addCommentResponseJson = JSON.parse(addCommentResponse.payload);
+      const commentId = addCommentResponseJson.data.addedComment.id;
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}`,
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      })
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+    })
+  })
+
+})
  
