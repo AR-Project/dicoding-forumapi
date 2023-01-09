@@ -2,6 +2,7 @@ const pool = require('../../database/postgres/pool');
 
 // error / exception
 const InvariantError = require('../../../Commons/exceptions/InvariantError');
+const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
 
 // Table Helper
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
@@ -90,4 +91,45 @@ describe('CommentREpositoryPostgress', () => {
       }))
     })
   })
+
+  describe('verifyComment function', () => {
+    it('should throw NotFoundError when commentId is INVALID', async () => {
+      // Arrange
+      const mockPayload = {
+        content: 'This is comment'
+      }
+      const comment = new Comment({
+        ...mockPayload,
+        owner: 'user-123',
+        threadId: 'thread-123'
+      })
+      const fakeIdGenerator = () => '123';
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
+      await commentRepositoryPostgres.addComment(comment);
+      const checkCommentTable = await CommentsTableTestHelper.findCommentsById('comment-123');
+
+      // Assert
+      expect(checkCommentTable).toHaveLength(1);
+      await expect(commentRepositoryPostgres.verifyComment('comment-999')).rejects.toThrowError(NotFoundError);
+    })
+    it('should not throw error when a comment is found', async () => { 
+      const mockPayload = {
+        content: 'This is comment'
+      }
+      const comment = new Comment({
+        ...mockPayload,
+        owner: 'user-123',
+        threadId: 'thread-123'
+      })
+      const fakeIdGenerator = () => '123';
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
+      await commentRepositoryPostgres.addComment(comment);
+      const checkCommentTable = await CommentsTableTestHelper.findCommentsById('comment-123');
+
+      // Assert
+      expect(checkCommentTable).toHaveLength(1);
+      await expect(commentRepositoryPostgres.verifyComment('comment-123')).resolves.not.toThrowError(NotFoundError);
+     })
+  })
+  
 })
