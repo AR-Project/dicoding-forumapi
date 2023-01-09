@@ -3,6 +3,7 @@ const pool = require('../../database/postgres/pool');
 // error / exception
 const InvariantError = require('../../../Commons/exceptions/InvariantError');
 const NotFoundError = require('../../../Commons/exceptions/NotFoundError');
+const AuthorizationError = require('../../../Commons/exceptions/AuthorizationError');
 
 // Table Helper
 const UsersTableTestHelper = require('../../../../tests/UsersTableTestHelper');
@@ -132,4 +133,43 @@ describe('CommentREpositoryPostgress', () => {
      })
   })
   
+  describe('verifyCommentOwner', () => {
+    beforeEach(async () => {
+      const mockPayload = {
+        content: 'This is comment'
+      }
+      const comment = new Comment({
+        ...mockPayload,
+        owner: 'user-123',
+        threadId: 'thread-123'
+      })
+      const fakeIdGenerator = () => '123';
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
+      await commentRepositoryPostgres.addComment(comment);
+
+    })
+
+    it('should throw AuthorizationError when comment.owner does NOT MATCH with userId', async () => {
+      // Arrange
+      const invalidUserId = 'user-999'
+      const validCommentId = 'comment-123'
+      const fakeIdGenerator = () => '123';
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
+      
+      // Assert
+      expect(commentRepositoryPostgres.verifyCommentOwner(validCommentId, invalidUserId)).rejects.toThrow(AuthorizationError);
+    })
+
+    it('should not throw AuthorizationError when comment.owner MATCH with userId', async () => { 
+      // Arrange
+      const validUserId = 'user-123'
+      const validCommentId = 'comment-123'
+      const fakeIdGenerator = () => '123';
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
+
+      // Assert
+      expect(commentRepositoryPostgres.verifyCommentOwner(validCommentId, validUserId)).resolves.not.toThrow(AuthorizationError);
+     })
+  })
+
 })
