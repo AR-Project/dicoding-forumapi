@@ -172,4 +172,32 @@ describe('CommentREpositoryPostgress', () => {
      })
   })
 
+  describe('deleteComment', () => { 
+    it('should change is_delete comment value on database', async () => { 
+      // Arrange
+      const mockPayload = {
+        content: 'This is comment'
+      }
+      const comment = new Comment({
+        ...mockPayload,
+        owner: 'user-123',
+        threadId: 'thread-123'
+      })
+      const fakeIdGenerator = () => '123';
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
+      await commentRepositoryPostgres.addComment(comment);
+      const prevResult = await CommentsTableTestHelper.findCommentsById('comment-123');
+      
+      // Action
+      await commentRepositoryPostgres.deleteComment('comment-123');
+      const afterResult = await CommentsTableTestHelper.findCommentsById('comment-123');
+
+      // Assert
+      expect(afterResult).toHaveLength(1);
+      expect(prevResult).toHaveLength(1);
+      expect(prevResult[0].is_deleted).toBe(false);
+      expect(afterResult[0].is_deleted).toBe(true);
+     })
+   })
+
 })

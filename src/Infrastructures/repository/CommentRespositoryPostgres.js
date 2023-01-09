@@ -53,6 +53,14 @@ class CommentRepositoryPostgres extends CommentRepository {
       throw new AuthorizationError('anda bukan pemilik comment ini')
     }
   }
+
+  async deleteComment(commentId) {
+    const query = {
+      text: 'UPDATE comments SET is_deleted = true WHERE id = $1',
+      values: [commentId],
+    }
+    await this._pool.query(query);
+  }
 }
 
 module.exports = CommentRepositoryPostgres;
