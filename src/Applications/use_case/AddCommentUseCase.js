@@ -3,7 +3,7 @@ const AddedComment = require('../../Domains/comments/entitites/AddedComment')
 
 class AddCommentUseCase {
   constructor({commentRepository, threadRepository }) {
-    this._CommentRepository = commentRepository;
+    this._commentRepository = commentRepository;
     this._threadRepository = threadRepository;
 
   }
@@ -20,7 +20,7 @@ class AddCommentUseCase {
     const newComment = new Comment({content: useCasePayload.content, owner: ownerId, threadId})
 
     // Finally invoke add comment and expect AddedComment in return
-    return this._CommentRepository.addComment(newComment);
+    return this._commentRepository.addComment(newComment);
   }
 
   _verifyParameter(ownerId, threadId) {
