@@ -19,22 +19,37 @@ const CommentRepositoryPostgres = require('../CommentRespositoryPostgres')
 
 describe('CommentREpositoryPostgress', () => {
   beforeAll(async () => {
-    const user = {
+    const userA = {
       id: 'user-123',
-      username: 'dicoding',
+      username: 'usera',
       password: 'secret',
       fullname: 'Dicoding Indonesia',
     }
+    const userB = {
+      id: 'user-456',
+      username: 'userb',
+      password: 'secret',
+      fullname: 'User Ke Dua',
+    }
 
-    const thread = {
+    const threadA = {
       id: 'thread-123',
       owner: 'user-123',
       title: 'Thread Title Test',
       body: 'Thread body test lorem ipsum.',
       date: new Date().toISOString(),
     }
-    await UsersTableTestHelper.addUser({ ...user });
-    await ThreadsTableTestHelper.addThread({ ...thread });
+    const threadB = {
+      id: 'thread-456',
+      owner: 'user-456',
+      title: 'Thread Sebelah',
+      body: 'Thread sebelah beda lapak.',
+      date: new Date().toISOString(),
+    }
+    await UsersTableTestHelper.addUser({ ...userA });
+    await UsersTableTestHelper.addUser({ ...userB });
+    await ThreadsTableTestHelper.addThread({ ...threadA });
+    await ThreadsTableTestHelper.addThread({ ...threadB });
   })
 
   afterEach(async () => {
@@ -199,5 +214,83 @@ describe('CommentREpositoryPostgress', () => {
       expect(afterResult[0].is_deleted).toBe(true);
      })
    })
+
+  describe('getAllCommentsByThreadId', () => { 
+    it('should get all comment under same threadId with correct payload', async () => { 
+      // Arrange
+      const comments = [
+        {
+          id: 'comment-123',
+          owner: 'user-123',
+          thread_id: 'thread-123',
+          content: 'komentar pertama dilapak utama',
+          date: 'date1',
+          is_deleted: false,
+        },
+        {
+          id: 'comment-124',
+          owner: 'user-456',
+          thread_id: 'thread-123',
+          content: 'komentar kedua dilapak utama',
+          date: 'date2',
+          is_deleted: false,
+        },
+        {
+          id: 'comment-125',
+          owner: 'user-123',
+          thread_id: 'thread-123',
+          content: 'komentar ketiga dilapak utama',
+          date: 'date3',
+          is_deleted: false,
+        },
+        {
+          id: 'comment-126',
+          owner: 'user-456',
+          thread_id: 'thread-123',
+          content: 'komentar keempat lapak utama tapi dihapus',
+          date: 'date4',
+          is_deleted: true,
+        },
+        {
+          id: 'comment-127',
+          owner: 'user-123',
+          thread_id: 'thread-123',
+          content: 'komentar kelima lapak utama',
+          date: 'date5',
+          is_deleted: false,
+        },
+        {
+          id: 'comment-128',
+          owner: 'user-123',
+          thread_id: 'thread-456',
+          content: 'komentar keenam lapak sebelah',
+          date: 'date6',
+          is_deleted: false,
+        },
+      ]
+
+      for(const comment of comments) {
+        await CommentsTableTestHelper.addComment({...comment})
+      }
+      
+      const totalCommentsInDatabase = await CommentsTableTestHelper.countTotalComments();
+
+      const fakeIdGenerator = () => '123';
+      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
+
+      // Action
+      const result = await commentRepositoryPostgres.getAllCommentsByThreadId('thread-123');
+
+      // Assert
+      expect(result).toHaveLength(5);
+      expect(totalCommentsInDatabase).toBe(6);
+      result.forEach((servedComment) => {
+        expect(servedComment.id).toBeDefined();
+        expect(servedComment.username).toBeDefined();
+        expect(servedComment.content).toBeDefined();
+        expect(servedComment.date).toBeDefined();
+      })
+    })
+  })
 
 })
