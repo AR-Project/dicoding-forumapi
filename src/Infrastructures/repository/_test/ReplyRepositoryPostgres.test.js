@@ -14,7 +14,7 @@ const RepliesTableTestHelper = require('../../../../tests/RepliesTableTestHelper
 const Reply = require('../../../Domains/replies/entities/Reply');
 const AddedReply = require('../../../Domains/replies/entities/AddedReply');
 
-// Repository 
+// Repository
 const ReplyRepositoryPostgres = require('../ReplyRepositoryPostgres');
 
 describe('ReplyRepositoryPostgres', () => {
@@ -60,9 +60,9 @@ describe('ReplyRepositoryPostgres', () => {
     await UsersTableTestHelper.addUser({ ...userA });
     await UsersTableTestHelper.addUser({ ...userB });
     await ThreadsTableTestHelper.addThread({ ...thread });
-    await CommentsTableTestHelper.addComment({...commentA});
-    await CommentsTableTestHelper.addComment({...commentB});
-  })
+    await CommentsTableTestHelper.addComment({ ...commentA });
+    await CommentsTableTestHelper.addComment({ ...commentB });
+  });
 
   afterEach(async () => {
     await RepliesTableTestHelper.cleanTable();
@@ -77,15 +77,15 @@ describe('ReplyRepositoryPostgres', () => {
 
   describe('addReply function', () => {
     it('should persist new reply inside database table', async () => {
-      // Arrange 
+      // Arrange
       const mockPayload = {
         content: 'This is a reply',
-      }
+      };
       const reply = new Reply({
         ...mockPayload,
         owner: 'user-123',
         commentId: 'comment-123',
-      })
+      });
       const fakeIdGenerator = () => '123';
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
 
@@ -97,20 +97,18 @@ describe('ReplyRepositoryPostgres', () => {
       // Assert
       expect(checkRepliesTable).toHaveLength(1);
       expect(totalRepliesTableRows).toEqual(1);
-
-
-    })
+    });
 
     it('should return addedReply correctly', async () => {
-      // Arrange 
+      // Arrange
       const mockPayload = {
         content: 'This is a reply',
-      }
+      };
       const reply = new Reply({
         ...mockPayload,
         owner: 'user-123',
         commentId: 'comment-123',
-      })
+      });
       const fakeIdGenerator = () => '123';
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
 
@@ -120,29 +118,28 @@ describe('ReplyRepositoryPostgres', () => {
       expect(addedReply).toStrictEqual(new AddedReply({
         id: 'reply-123',
         content: mockPayload.content,
-        owner: reply.owner
-      }))
-    })
-  })
+        owner: reply.owner,
+      }));
+    });
+  });
 
   describe('verifyReply function', () => {
     beforeEach(async () => {
       const mockPayload = {
         content: 'This is a reply',
-      }
+      };
       const reply = new Reply({
         ...mockPayload,
         owner: 'user-123',
         commentId: 'comment-123',
-      })
+      });
       const fakeIdGenerator = () => '123';
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
       await replyRepositoryPostgres.addReply(reply);
-
-    })
+    });
 
     it('should throw NotFoundError when replyId is invalid', async () => {
-      // Arrange 
+      // Arrange
       const fakeIdGenerator = () => '123';
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
       const totalRepliesTableRows = await RepliesTableTestHelper.countTotalReplies();
@@ -150,11 +147,11 @@ describe('ReplyRepositoryPostgres', () => {
       // Action
       expect(totalRepliesTableRows).toEqual(1);
       await expect(replyRepositoryPostgres.verifyReply('reply-999')).rejects
-        .toThrow(NotFoundError)
-    })
+        .toThrow(NotFoundError);
+    });
 
     it('should NOT throw NotFoundError when replyId is valid / found', async () => {
-      // Arrange 
+      // Arrange
       const fakeIdGenerator = () => '123';
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
       const totalRepliesTableRows = await RepliesTableTestHelper.countTotalReplies();
@@ -162,10 +159,10 @@ describe('ReplyRepositoryPostgres', () => {
       // Assert
       expect(totalRepliesTableRows).toEqual(1);
       await expect(replyRepositoryPostgres.verifyReply('reply-123')).resolves.not
-        .toThrow(NotFoundError)
-    })
-  })
-  
+        .toThrow(NotFoundError);
+    });
+  });
+
   describe('verifyReplyOwner function', () => {
     beforeEach(async () => {
       const mockPayload = {
@@ -174,12 +171,12 @@ describe('ReplyRepositoryPostgres', () => {
       const reply = new Reply({
         ...mockPayload,
         owner: 'user-123',
-        commentId: 'comment-123'
-      })
+        commentId: 'comment-123',
+      });
       const fakeIdGenerator = () => '123';
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
       await replyRepositoryPostgres.addReply(reply);
-    })
+    });
 
     it('should throw AuthorizationError when reply owner NOT MATCH with user ID', async () => {
       // Arrange
@@ -191,7 +188,7 @@ describe('ReplyRepositoryPostgres', () => {
       // Assert
       expect(replyRepositoryPostgres.verifyReplyOwner(validReplyId, invalidUserId))
         .rejects.toThrow(AuthorizationError);
-    })
+    });
     it('should NOT throw AuthorizationError when reply owner match with user ID', async () => {
       // Arrange
       const validReplyId = 'reply-123';
@@ -202,21 +199,20 @@ describe('ReplyRepositoryPostgres', () => {
       // Assert
       expect(replyRepositoryPostgres.verifyReplyOwner(validReplyId, validUserId))
         .resolves.not.toThrow(AuthorizationError);
-    })
-
-  })
+    });
+  });
 
   describe('deleteComment function', () => {
     it('should change is_delete database reply value ', async () => {
-      // Arrange 
+      // Arrange
       const mockPayload = {
         content: 'This is a reply.',
       };
       const reply = new Reply({
         ...mockPayload,
         owner: 'user-123',
-        commentId: 'comment-123'
-      })
+        commentId: 'comment-123',
+      });
       const fakeIdGenerator = () => '123';
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
       await replyRepositoryPostgres.addReply(reply);
@@ -226,13 +222,13 @@ describe('ReplyRepositoryPostgres', () => {
       await replyRepositoryPostgres.deleteReply('reply-123');
       const afterResult = await RepliesTableTestHelper.findRepliesById('reply-123');
 
-      // Assert 
+      // Assert
       expect(prevResult).toHaveLength(1);
       expect(afterResult).toHaveLength(1);
       expect(prevResult[0].is_deleted).toBe(false);
       expect(afterResult[0].is_deleted).toBe(true);
-    })
-  })
+    });
+  });
 
   describe('getAllRepliesByCommentId function', () => {
     it('should fetch all reply with same threadId and correct payload', async () => {
@@ -243,7 +239,7 @@ describe('ReplyRepositoryPostgres', () => {
           commentId: 'comment-123',
           content: 'balasan komentar utama',
           date: 'date1',
-          is_deleted: false
+          is_deleted: false,
         },
         {
           id: 'reply-124',
@@ -251,7 +247,7 @@ describe('ReplyRepositoryPostgres', () => {
           commentId: 'comment-123',
           content: 'balasan terhapus komentar utama',
           date: 'date1',
-          is_deleted: true
+          is_deleted: true,
         },
         {
           id: 'reply-125',
@@ -259,9 +255,9 @@ describe('ReplyRepositoryPostgres', () => {
           commentId: 'comment-124',
           content: 'balasan dikomentar sebelah',
           date: 'date1',
-          is_deleted: false
+          is_deleted: false,
         },
-      ]
+      ];
 
       // eslint-disable-next-line no-restricted-syntax
       for (const reply of replies) {
@@ -283,8 +279,7 @@ describe('ReplyRepositoryPostgres', () => {
         expect(servedReply.content).toBeDefined();
         expect(servedReply.date).toBeDefined();
         expect(servedReply.is_deleted).toBeDefined();
-
-      })
-    })
-  })
-})
+      });
+    });
+  });
+});

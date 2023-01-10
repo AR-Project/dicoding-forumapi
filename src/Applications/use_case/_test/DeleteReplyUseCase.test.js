@@ -19,7 +19,7 @@ describe('DeleteReplyUseCase = ', () => {
       replyRepository: mockReplyRepository,
       commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
-    })
+    });
 
     await expect(deleteReplyUseCase.execute(undefined, commentId, threadId, userId)).rejects
       .toThrowError('DELETE_REPLY_USECASE.MISSING_PARAM');
@@ -31,7 +31,7 @@ describe('DeleteReplyUseCase = ', () => {
       .toThrowError('DELETE_REPLY_USECASE.MISSING_PARAM');
     // await expect(deleteReplyUseCase.execute(replyId, commentId, threadId, userId)).rejects
     //   .toThrowError('DELETE_REPLY_USECASE.MISSING_PARAM');
-  })
+  });
 
   it('should orchestrating the deleting reply action correctly', async () => {
     // Arrange
@@ -57,21 +57,18 @@ describe('DeleteReplyUseCase = ', () => {
     mockThreadRepository.verifyThread = jest.fn()
       .mockImplementation(() => Promise.resolve());
 
-
     const deleteReplyUseCase = new DeleteReplyUseCase({
       replyRepository: mockReplyRepository,
       commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
-    })
+    });
 
     await deleteReplyUseCase.execute(replyId, commentId, threadId, userId);
-    
+
     expect(mockThreadRepository.verifyThread).toBeCalledWith(threadId);
     expect(mockCommentRepository.verifyComment).toBeCalledWith(commentId);
     expect(mockReplyRepository.verifyReply).toBeCalledWith(replyId);
     expect(mockReplyRepository.verifyReplyOwner).toBeCalledWith(replyId, userId);
     expect(mockReplyRepository.deleteReply).toBeCalledWith(replyId);
-
-
-  })
-})
+  });
+});

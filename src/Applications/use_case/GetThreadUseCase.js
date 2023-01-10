@@ -13,7 +13,7 @@ class GetThreadUseCase {
     // Verify thread
     await this._threadRepository.verifyThread(parameter);
 
-    // Fetch Thread 
+    // Fetch Thread
     const thread = await this._threadRepository.getThread(parameter);
 
     // Fetch All Comment using parameter: threadId
@@ -23,15 +23,15 @@ class GetThreadUseCase {
     thread.comments = this._sanitizeComments(rawComments);
 
     // Iterate every comment
-    for (let i=0; i < thread.comments.length; i++){
+    for (let i = 0; i < thread.comments.length; i += 1) {
       // Fetch All Replies using parameter: current threadId
+      // eslint-disable-next-line no-await-in-loop
       const rawReplies = await this._replyRepository
-        .getAllRepliesByCommentId(thread.comments[i].id)
+        .getAllRepliesByCommentId(thread.comments[i].id);
 
       // Sanitize Replies and store into EACH comments
-      thread.comments[i].replies = this._sanitizeReplies(rawReplies)
+      thread.comments[i].replies = this._sanitizeReplies(rawReplies);
     }
-
 
     return thread;
   }
@@ -44,6 +44,7 @@ class GetThreadUseCase {
       content: comment.is_deleted ? '**komentar telah dihapus**' : comment.content,
     }));
   }
+
   _sanitizeReplies(replies) {
     return replies.map((reply) => ({
       id: reply.id,

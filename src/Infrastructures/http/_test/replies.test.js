@@ -27,9 +27,6 @@ describe('/thread/{threadId}/comment endpoint', () => {
       password: userRegisterPayload.password,
     };
 
-    const commentPayload = {
-      content: 'This is a comment.'
-    }
     // CREATE SERVER
     const server = await createServer(container);
 
@@ -74,15 +71,15 @@ describe('/thread/{threadId}/comment endpoint', () => {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
-    })
+    });
     const postCommentResponseJson = await JSON.parse(postCommentResponse.payload);
     commentId = postCommentResponseJson.data.addedComment.id;
   });
 
   afterEach(async () => {
-    await RepliesTableTestHelper.cleanTable()
+    await RepliesTableTestHelper.cleanTable();
   });
-  
+
   afterAll(async () => {
     await CommentsTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();

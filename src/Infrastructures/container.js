@@ -241,8 +241,8 @@ container.register([
         },
         {
           name: 'replyRepository',
-          internal: ReplyRepository.name
-        }
+          internal: ReplyRepository.name,
+        },
       ],
     },
   },

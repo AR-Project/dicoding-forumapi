@@ -1,7 +1,7 @@
 const Reply = require('../../Domains/replies/entities/Reply');
 
 class AddReplyUseCase {
-  constructor({replyRepository, commentRepository, threadRepository}) {
+  constructor({ replyRepository, commentRepository, threadRepository }) {
     this._replyRepository = replyRepository;
     this._commentRepository = commentRepository;
     this._threadRepository = threadRepository;
@@ -15,19 +15,19 @@ class AddReplyUseCase {
     await this._threadRepository.verifyThread(threadId);
     await this._commentRepository.verifyComment(commentId);
 
-    // verify needed payload 
+    // verify needed payload
     const reply = new Reply({
       content: useCasePayload.content,
       owner: ownerId,
       commentId,
-    })
+    });
 
     return this._replyRepository.addReply(reply);
   }
 
   _verifyParameter(ownerId, threadId, commentId) {
     if (!ownerId || !threadId || !commentId) {
-      throw new Error('REPLY_COMMENT_USECASE.MISSING_PARAMETER')
+      throw new Error('REPLY_COMMENT_USECASE.MISSING_PARAMETER');
     }
   }
 }

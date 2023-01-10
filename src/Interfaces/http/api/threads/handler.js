@@ -101,12 +101,12 @@ class ThreadHandler {
 
   async addReplyHandler(request, h) {
     const userCredentials = new Credentials(request.auth.credentials);
-    const {threadId, commentId} = request.params;
+    const { threadId, commentId } = request.params;
 
     // Invoke use case
     const addReplyUseCase = this._container.getInstance(AddReplyUseCase.name);
 
-    // Action 
+    // Action
     const addedReply = await addReplyUseCase
       .execute(request.payload, userCredentials.id, threadId, commentId);
 
@@ -123,9 +123,9 @@ class ThreadHandler {
     return response;
   }
 
-  async deleteReplyHandler(request, h) {
+  async deleteReplyHandler(request) {
     const userCredentials = new Credentials(request.auth.credentials);
-    const {threadId, commentId, replyId} = request.params;
+    const { threadId, commentId, replyId } = request.params;
 
     // Invoke Use Case
     const deleteReplyUseCase = this._container.getInstance(DeleteReplyUseCase.name);
@@ -134,8 +134,8 @@ class ThreadHandler {
     await deleteReplyUseCase.execute(replyId, commentId, threadId, userCredentials.id);
 
     return {
-      status: 'success'
-    }
+      status: 'success',
+    };
   }
 }
 

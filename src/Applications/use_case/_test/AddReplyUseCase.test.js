@@ -14,8 +14,8 @@ describe('AddReplyUseCase', () => {
   it('should throw error if any parameter is missing', async () => {
     // Arrange
     const useCasePayload = {
-      content: 'This is a reply.'
-    }
+      content: 'This is a reply.',
+    };
     const ownerId = 'user-123';
     const threadId = 'thread-123';
     const commentId = 'comment-123';
@@ -28,21 +28,21 @@ describe('AddReplyUseCase', () => {
       replyRepository: mockReplyRepository,
       commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
-    })
+    });
 
     await expect(addReplyUseCase.execute(useCasePayload, undefined, threadId, commentId)).rejects
-      .toThrowError('REPLY_COMMENT_USECASE.MISSING_PARAMETER')
+      .toThrowError('REPLY_COMMENT_USECASE.MISSING_PARAMETER');
     await expect(addReplyUseCase.execute(useCasePayload, ownerId, undefined, commentId)).rejects
-      .toThrowError('REPLY_COMMENT_USECASE.MISSING_PARAMETER')
+      .toThrowError('REPLY_COMMENT_USECASE.MISSING_PARAMETER');
     await expect(addReplyUseCase.execute(useCasePayload, ownerId, threadId, undefined)).rejects
-      .toThrowError('REPLY_COMMENT_USECASE.MISSING_PARAMETER')
-  })
+      .toThrowError('REPLY_COMMENT_USECASE.MISSING_PARAMETER');
+  });
 
   it('should orchestrating adding reply action correctly', async () => {
     // Arrange
     const useCasePayload = {
-      content: 'This is a reply.'
-    }
+      content: 'This is a reply.',
+    };
     const ownerId = 'user-123';
     const threadId = 'thread-123';
     const commentId = 'comment-123';
@@ -51,12 +51,12 @@ describe('AddReplyUseCase', () => {
       id: 'reply-id',
       content: useCasePayload.content,
       owner: ownerId,
-    })
+    });
 
     // Create dependencies and mocking needed it function
     const mockReplyRepository = new ReplyRepository();
     mockReplyRepository.addReply = jest.fn()
-      .mockImplementation(() => Promise.resolve(expectedAddedReply))
+      .mockImplementation(() => Promise.resolve(expectedAddedReply));
 
     const mockCommentRepository = new CommentRepository();
     mockCommentRepository.verifyComment = jest.fn().mockImplementation(() => Promise.resolve());
@@ -69,7 +69,7 @@ describe('AddReplyUseCase', () => {
       replyRepository: mockReplyRepository,
       commentRepository: mockCommentRepository,
       threadRepository: mockThreadRepository,
-    })
+    });
 
     // Action
     const addedReply = await addReplyUseCase.execute(useCasePayload, ownerId, threadId, commentId);
@@ -82,6 +82,6 @@ describe('AddReplyUseCase', () => {
       content: useCasePayload.content,
       owner: ownerId,
       commentId,
-    }))
-  })
-})
+    }));
+  });
+});

@@ -25,7 +25,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
         RETURNING id, content, owner
       `,
       values: [id, owner, commentId, content, date, isDeleted],
-    }
+    };
 
     const result = await this._pool.query(query);
     return new AddedReply({ ...result.rows[0] });
@@ -48,14 +48,15 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     const query = {
       text: 'SELECT owner FROM replies WHERE id = $1',
       values: [replyId],
-    }
+    };
 
     const result = await this._pool.query(query);
 
-    if(result.rows[0].owner !== userId) {
+    if (result.rows[0].owner !== userId) {
       throw new AuthorizationError('anda bukan pemilik balasan ini');
     }
   }
+
   async deleteReply(replyId) {
     const query = {
       text: 'UPDATE replies SET is_deleted = true WHERE id = $1',
@@ -75,7 +76,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
         ORDER BY replies.date ASC
       `,
       values: [commentId],
-    }
+    };
     const result = await this._pool.query(query);
 
     return result.rows;

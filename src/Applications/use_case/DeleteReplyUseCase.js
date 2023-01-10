@@ -16,7 +16,7 @@ class DeleteReplyUseCase {
 
   _verifyParameter(replyId, commentId, threadId, userId) {
     if (!replyId || !threadId || !commentId || !userId) {
-      throw new Error('DELETE_REPLY_USECASE.MISSING_PARAM')
+      throw new Error('DELETE_REPLY_USECASE.MISSING_PARAM');
     }
   }
 }

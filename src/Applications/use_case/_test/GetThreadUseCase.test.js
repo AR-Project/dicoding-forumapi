@@ -47,7 +47,7 @@ describe('GetThreadUseCase', () => {
         content: 'Reply #2 content.',
         is_deleted: false,
       },
-    ]
+    ];
 
     const expectedGetThreadResult = {
       id: expectedGetThread.id,
@@ -110,7 +110,7 @@ describe('GetThreadUseCase', () => {
     mockCommentRepository.getAllCommentsByThreadId = jest.fn()
       .mockImplementation(() => Promise.resolve(expectedGetAllCommentsByThreadId));
     mockReplyRepository.getAllRepliesByCommentId = jest.fn()
-      .mockImplementation(() => Promise.resolve(expectedGetAllRepliesByCommentId))
+      .mockImplementation(() => Promise.resolve(expectedGetAllRepliesByCommentId));
 
     const getThreadUseCase = new GetThreadUseCase({
       threadRepository: mockThreadRepository,
@@ -126,9 +126,9 @@ describe('GetThreadUseCase', () => {
       expect(comment.is_deleted).toBeUndefined();
       comment.replies.forEach((reply) => {
         expect(reply.is_deleted).toBeUndefined();
-      })
+      });
     });
-    
+
     expect(mockThreadRepository.verifyThread)
       .toBeCalledWith(parameter);
     expect(mockThreadRepository.getThread)
