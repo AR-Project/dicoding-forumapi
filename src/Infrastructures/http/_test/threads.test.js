@@ -84,4 +84,52 @@ describe('/threads endpoint', () => {
 
     })
   })
+
+  describe('when GET /threads/{threadId}', () => {
+    it('should response 200 and return correct payload', async () => {
+      // Arange: prepare server
+      const server = await createServer(container);
+
+      // Arrange: Post a thread
+      const postThreadResponse = await server.inject({
+        method:'POST',
+        url: '/threads',
+        payload: {
+          title: 'Thread Title at http test',
+          body: 'Thread body at http test'
+        },
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      })
+
+      // Arrange: Get and store threadId
+      const postThreadResponseJson = JSON.parse(postThreadResponse.payload);
+      const {id: threadId} = postThreadResponseJson.data.addedThread;
+
+      // Arrange: Post a comment
+      await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments`,
+        payload: {
+          content: 'A comment at http test'
+        },
+        headers: {
+          'Authorization': `Bearer ${accessToken}`
+        }
+      });
+
+      // Action
+      const response = await server.inject({
+        method: 'GET',
+        url: `/threads/${threadId}`
+      })
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(200);
+      expect(responseJson.status).toEqual('success');
+      expect(responseJson.data.thread).toBeDefined();
+    })
+  })
 })
