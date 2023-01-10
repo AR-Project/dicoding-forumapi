@@ -9,7 +9,7 @@ class DeleteReplyUseCase {
     this._verifyParameter(replyId, commentId, threadId, userId);
     await this._threadRepository.verifyThread(threadId);
     await this._commentRepository.verifyComment(commentId);
-    await this._replyRepository.verifyReply(threadId);
+    await this._replyRepository.verifyReply(replyId);
     await this._replyRepository.verifyReplyOwner(replyId, userId);
     await this._replyRepository.deleteReply(replyId);
   }

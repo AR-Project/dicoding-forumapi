@@ -68,7 +68,7 @@ describe('DeleteReplyUseCase = ', () => {
     
     expect(mockThreadRepository.verifyThread).toBeCalledWith(threadId);
     expect(mockCommentRepository.verifyComment).toBeCalledWith(commentId);
-    expect(mockReplyRepository.verifyReply).toBeCalledWith(threadId);
+    expect(mockReplyRepository.verifyReply).toBeCalledWith(replyId);
     expect(mockReplyRepository.verifyReplyOwner).toBeCalledWith(replyId, userId);
     expect(mockReplyRepository.deleteReply).toBeCalledWith(replyId);
 
