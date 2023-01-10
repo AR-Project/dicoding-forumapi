@@ -122,4 +122,33 @@ describe('ThreadRepositoryPostgress', () =>{
       await expect( threadRepositoryPostgres.verifyThread(validThreadId)).resolves.not.toThrow(NotFoundError)
     })
   })
+
+  describe('getThread function', () => {
+    it('should return correct payload when get called', async () => {
+      // Arrange
+      const newThread = new NewThread({
+        title: 'A Thread Title',
+        body: 'Body content of a thread.',
+        owner: 'user-123'
+      })
+      const validThreadId = 'thread-123'
+      // repo and stub
+      const fakeIdGenerator = () => '123'
+      const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
+      await threadRepositoryPostgres.addNewThread(newThread);
+
+      // Pre-Assert
+      const thread = await ThreadsTableTestHelper.findThreadsById(validThreadId);
+
+      // Assert
+      const result = await threadRepositoryPostgres.getThread(validThreadId);
+      expect(thread).toHaveLength(1);
+      expect(result.id).toBeDefined();
+      expect(result.title).toBeDefined();
+      expect(result.body).toBeDefined();
+      expect(result.date).toBeDefined();
+      expect(result.username).toBeDefined();
+
+    })
+  })
 })
