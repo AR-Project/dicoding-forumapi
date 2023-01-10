@@ -273,7 +273,7 @@ describe('ReplyRepositoryPostgres', () => {
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
       const totalRepliesInDatabase = await RepliesTableTestHelper.countTotalReplies();
 
-      const result = await replyRepositoryPostgres.getAllReplysByCommentId('comment-123');
+      const result = await replyRepositoryPostgres.getAllRepliesByCommentId('comment-123');
 
       expect(result).toHaveLength(2);
       expect(totalRepliesInDatabase).toBe(3);

@@ -64,7 +64,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
     await this._pool.query(query);
   }
 
-  async getAllReplysByCommentId(commentId) {
+  async getAllRepliesByCommentId(commentId) {
     const query = {
       text: `
         SELECT replies.id, users.username, replies.date, replies.content, replies.is_deleted

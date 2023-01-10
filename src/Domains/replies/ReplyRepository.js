@@ -16,7 +16,7 @@ class ReplyRespository {
     throw new Error('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 
-  async getAllReplysByCommentId(threadId) {
+  async getAllRepliesByCommentId(threadId) {
     throw new Error('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
 }
