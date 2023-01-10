@@ -117,7 +117,7 @@ describe('/thread/{threadId}/comment endpoint', () => {
     });
   });
 
-  xdescribe('when DELETE /thread/{treadId}/comment/{commentId}/replies/{replyId}', () => {
+  describe('when DELETE /thread/{treadId}/comment/{commentId}/replies/{replyId}', () => {
     it('should response 200 and soft-delete comment', async () => {
       // Arrange
       const requestPayload = {
