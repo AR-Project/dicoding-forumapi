@@ -25,14 +25,14 @@ const LogoutUserUseCase = require('../Applications/use_case/LogoutUserUseCase');
 const RefreshAuthenticationUseCase = require('../Applications/use_case/RefreshAuthenticationUseCase');
 
 // thread module group
-const ThreadRepository = require('../Domains/threads/ThreadRepository')
-const ThreadRepositoryPostgres = require('../Infrastructures/repository/ThreadRepositoryPostgres')
-const AddNewThreadUseCase = require('../Applications/use_case/AddNewThreadUseCase')
-const GetThreadUseCase = require('../Applications/use_case/GetThreadUseCase')
+const ThreadRepository = require('../Domains/threads/ThreadRepository');
+const ThreadRepositoryPostgres = require('./repository/ThreadRepositoryPostgres');
+const AddNewThreadUseCase = require('../Applications/use_case/AddNewThreadUseCase');
+const GetThreadUseCase = require('../Applications/use_case/GetThreadUseCase');
 
 // Comment Module group
 const CommentRepository = require('../Domains/comments/CommentRepository');
-const CommentRepositoryPostgres = require('../Infrastructures/repository/CommentRespositoryPostgres');
+const CommentRepositoryPostgres = require('./repository/CommentRespositoryPostgres');
 const AddCommentUseCase = require('../Applications/use_case/AddCommentUseCase');
 const DeleteCommentUseCase = require('../Applications/use_case/DeleteCommentUseCase');
 
@@ -218,7 +218,7 @@ container.register([
         {
           name: 'commentRepository',
           internal: CommentRepository.name,
-        }
+        },
       ],
     },
   },

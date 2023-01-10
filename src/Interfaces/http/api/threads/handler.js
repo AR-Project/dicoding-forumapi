@@ -20,17 +20,17 @@ class ThreadHandler {
     const userCredentials = new Credentials(request.auth.credentials);
 
     // Invoke UseCase
-    const addNewThreadUseCase  = this._container.getInstance(AddNewThreadUseCase.name);
+    const addNewThreadUseCase = this._container.getInstance(AddNewThreadUseCase.name);
 
     // Action!!
-    const addedThread = await addNewThreadUseCase.execute(request.payload, userCredentials.id)
+    const addedThread = await addNewThreadUseCase.execute(request.payload, userCredentials.id);
 
     // Arrange response
     const response = h.response({
       status: 'success',
       data: {
         addedThread,
-      }
+      },
     });
     response.code(201);
 
@@ -41,30 +41,31 @@ class ThreadHandler {
   async postCommentHandler(request, h) {
     // Store incoming information
     const userCredentials = new Credentials(request.auth.credentials);
-    const {threadId} = request.params;
-  
+    const { threadId } = request.params;
+
     // Invoke UseCase
     const addCommentUseCase = this._container.getInstance(AddCommentUseCase.name);
 
     // Action!!
-    const addedComment = await addCommentUseCase.execute(request.payload, userCredentials.id, threadId)
-    
+    const addedComment = await addCommentUseCase
+      .execute(request.payload, userCredentials.id, threadId);
+
     // Arrange response
     const response = h.response({
       status: 'success',
       data: {
         addedComment,
-      }
-    })
+      },
+    });
     response.code(201);
 
     // Bye, bye love you.
     return response;
   }
 
-  async deleteCommentHandler(request, h) {
+  async deleteCommentHandler(request) {
     const userCredentials = new Credentials(request.auth.credentials);
-    const {commentId, threadId} = request.params;
+    const { commentId, threadId } = request.params;
 
     // Invoke UseCase
     const deleteCommentUseCase = this._container.getInstance(DeleteCommentUseCase.name);
@@ -73,11 +74,11 @@ class ThreadHandler {
     await deleteCommentUseCase.execute(threadId, commentId, userCredentials.id);
     return {
       status: 'success',
-    }
+    };
   }
 
-  async getThreadHandler(request, h) {
-    const {threadId} = request.params;
+  async getThreadHandler(request) {
+    const { threadId } = request.params;
 
     // Invoke UseCase
     const getThreadUseCase = this._container.getInstance(GetThreadUseCase.name);
@@ -90,8 +91,8 @@ class ThreadHandler {
       status: 'success',
       data: {
         thread,
-      }
-    }
+      },
+    };
   }
 }
 

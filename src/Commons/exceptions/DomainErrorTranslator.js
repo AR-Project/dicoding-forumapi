@@ -1,6 +1,5 @@
 const InvariantError = require('./InvariantError');
-const AuthorizationError = require('./AuthorizationError');
-const AuthenticationError = require('./AuthenticationError')
+const AuthenticationError = require('./AuthenticationError');
 
 const DomainErrorTranslator = {
   translate(error) {
@@ -21,12 +20,12 @@ DomainErrorTranslator._directories = {
   'DELETE_AUTHENTICATION_USE_CASE.PAYLOAD_NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('refresh token harus string'),
   'CREDENTIALS.NOT_CONTAIN_NEEDED_PROPERTY': new AuthenticationError('Missing authentication'),
   'CREDENTIALS.NOT_MEET_DATA_TYPE_SPECIFICATION': new AuthenticationError('Missing authentication'),
-  'NEW_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION' : new InvariantError('tidak bisa membuat thread baru, data tidak sesuai'),
-  'NEW_THREAD.NOT_CONTAIN_NEEDED_PROPERTY' : new InvariantError('tidak bisa membuat thread baru, data tidak lengkap'),
-  'COMMENT.MISSING_CONTENT' : new InvariantError('tidak bisa membuat komentar baru, data tidak lengkap'),
-  'COMMENT.MISSING_OWNER' : new InvariantError('tidak bisa membuat komentar baru, data tidak lengkap'),
-  'COMMENT.MISSING_THREAD_ID' : new InvariantError('tidak bisa membuat komentar baru, data tidak lengkap'),
-  'COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION' : new InvariantError('tidak bisa membuat komentar baru, data tidak sesuai'),
+  'NEW_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak bisa membuat thread baru, data tidak sesuai'),
+  'NEW_THREAD.NOT_CONTAIN_NEEDED_PROPERTY': new InvariantError('tidak bisa membuat thread baru, data tidak lengkap'),
+  'COMMENT.MISSING_CONTENT': new InvariantError('tidak bisa membuat komentar baru, data tidak lengkap'),
+  'COMMENT.MISSING_OWNER': new InvariantError('tidak bisa membuat komentar baru, data tidak lengkap'),
+  'COMMENT.MISSING_THREAD_ID': new InvariantError('tidak bisa membuat komentar baru, data tidak lengkap'),
+  'COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION': new InvariantError('tidak bisa membuat komentar baru, data tidak sesuai'),
 };
 
 module.exports = DomainErrorTranslator;

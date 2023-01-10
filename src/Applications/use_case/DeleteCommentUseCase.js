@@ -11,10 +11,10 @@ class DeleteCommentUseCase {
     await this._commentRepository.verifyCommentOwner(commentId, userId);
     await this._commentRepository.deleteComment(commentId);
   }
-  
+
   _verifyParameter(threadId, commentId, userId) {
     if (!threadId || !commentId || !userId) {
-      throw new Error('DELETE_COMMENT_USECASE.MISSING_PARAM')
+      throw new Error('DELETE_COMMENT_USECASE.MISSING_PARAM');
     }
   }
 }

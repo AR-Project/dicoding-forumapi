@@ -8,20 +8,20 @@ class AddedComment {
   }
 
   _verifyPayload(payload) {
-    const {content, owner, id } = payload;
+    const { content, owner, id } = payload;
 
     if (!id) {
-      throw new Error('ADDED_COMMENT.MISSING_COMMENT_ID')
+      throw new Error('ADDED_COMMENT.MISSING_COMMENT_ID');
     }
     if (!content) {
-      throw new Error('ADDED_COMMENT.MISSING_CONTENT')
+      throw new Error('ADDED_COMMENT.MISSING_CONTENT');
     }
     if (!owner) {
-      throw new Error('ADDED_COMMENT.MISSING_OWNER')
+      throw new Error('ADDED_COMMENT.MISSING_OWNER');
     }
 
-    if (typeof id !== 'string'|| typeof content !== 'string' || typeof owner !== 'string') {
-      throw new Error ('ADDED_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION')
+    if (typeof id !== 'string' || typeof content !== 'string' || typeof owner !== 'string') {
+      throw new Error('ADDED_COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }
 }

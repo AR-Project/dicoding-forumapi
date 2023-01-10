@@ -8,25 +8,25 @@ const AuthenticationsTableTestHelper = require('../../../../tests/Authentication
 const container = require('../../container');
 const createServer = require('../createServer');
 
-describe('/thread/{threadId}/comment endpoint', () => { 
-  // declare accessToken variable 
+describe('/thread/{threadId}/comment endpoint', () => {
+  // declare accessToken variable
   let accessToken;
   let threadId;
 
-  beforeAll(async() => {
+  beforeAll(async () => {
     // create register, login, and thread payload
     const userRegisterPayload = {
       username: 'dicoding',
       password: 'secret',
       fullname: 'Dicoding Indonesia',
-    }
+    };
     const threadPayload = {
       title: 'Thread title',
       body: 'Thread body',
     };
     const userLoginPayload = {
       username: userRegisterPayload.username,
-      password: userRegisterPayload.password
+      password: userRegisterPayload.password,
     };
     // CREATE SERVER
     const server = await createServer(container);
@@ -37,7 +37,7 @@ describe('/thread/{threadId}/comment endpoint', () => {
       url: '/users',
       payload: userRegisterPayload,
     });
-    
+
     // LOGIN
     const loginResponse = await server.inject({
       method: 'POST',
@@ -45,7 +45,7 @@ describe('/thread/{threadId}/comment endpoint', () => {
       payload: userLoginPayload,
     });
 
-    // Parse and Store access token 
+    // Parse and Store access token
     const loginResponseJson = await JSON.parse(loginResponse.payload);
     accessToken = loginResponseJson.data.accessToken;
 
@@ -55,20 +55,20 @@ describe('/thread/{threadId}/comment endpoint', () => {
       url: '/threads',
       payload: threadPayload,
       headers: {
-        'Authorization': `Bearer ${accessToken}`
-      }
-    })
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
 
     // Parse and Store threadId
     const postThreadResponseJson = await JSON.parse(postThreadResponse.payload);
     const { id } = postThreadResponseJson.data.addedThread;
     threadId = id;
-  })
+  });
 
   afterEach(async () => {
     await CommentsTableTestHelper.cleanTable();
-  })
-  
+  });
+
   afterAll(async () => {
     await ThreadsTableTestHelper.cleanTable();
     await AuthenticationsTableTestHelper.cleanTable();
@@ -76,11 +76,11 @@ describe('/thread/{threadId}/comment endpoint', () => {
     await pool.end();
   });
 
-  describe('when POST /threads/{threadId}/comment', () => { 
-    it('should response 201 and persisted comment', async () => { 
+  describe('when POST /threads/{threadId}/comment', () => {
+    it('should response 201 and persisted comment', async () => {
       // Arrange
       const requestPayload = {
-        content: 'This is a comment'
+        content: 'This is a comment',
       };
       const server = await createServer(container);
 
@@ -90,23 +90,23 @@ describe('/thread/{threadId}/comment endpoint', () => {
         url: `/threads/${threadId}/comments`,
         payload: requestPayload,
         headers: {
-          'Authorization': `Bearer ${accessToken}`
-        }
-      })
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
       // Assert
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(201);
       expect(responseJson.status).toEqual('success');
       expect(responseJson.data.addedComment).toBeDefined();
-    })
-  })
+    });
+  });
 
-  describe('when DELETE /thread/{treadId}/comment/{commentId}', () => { 
-    it('should response 200 and soft-delete comment', async () => { 
+  describe('when DELETE /thread/{treadId}/comment/{commentId}', () => {
+    it('should response 200 and soft-delete comment', async () => {
       // Arrange
       const requestPayload = {
-        content: 'This is a comment'
+        content: 'This is a comment',
       };
       const server = await createServer(container);
       const addCommentResponse = await server.inject({
@@ -114,9 +114,9 @@ describe('/thread/{threadId}/comment endpoint', () => {
         url: `/threads/${threadId}/comments`,
         payload: requestPayload,
         headers: {
-          'Authorization': `Bearer ${accessToken}`
-        }
-      })
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
       const addCommentResponseJson = JSON.parse(addCommentResponse.payload);
       const commentId = addCommentResponseJson.data.addedComment.id;
 
@@ -125,16 +125,14 @@ describe('/thread/{threadId}/comment endpoint', () => {
         method: 'DELETE',
         url: `/threads/${threadId}/comments/${commentId}`,
         headers: {
-          'Authorization': `Bearer ${accessToken}`
-        }
-      })
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
       // Assert
       const responseJson = JSON.parse(response.payload);
       expect(response.statusCode).toEqual(200);
       expect(responseJson.status).toEqual('success');
-    })
-  })
-
-})
- 
+    });
+  });
+});

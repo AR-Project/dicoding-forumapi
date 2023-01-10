@@ -8,14 +8,14 @@ class NewThread {
   }
 
   _verifyPayload(payload) {
-    const {title, body, owner } = payload;
+    const { title, body, owner } = payload;
 
     if (!title || !body || !owner) {
-      throw new Error ('NEW_THREAD.NOT_CONTAIN_NEEDED_PROPERTY')
+      throw new Error('NEW_THREAD.NOT_CONTAIN_NEEDED_PROPERTY');
     }
 
     if (typeof title !== 'string' || typeof body !== 'string' || typeof owner !== 'string') {
-      throw new Error ('NEW_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION')
+      throw new Error('NEW_THREAD.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }
 }

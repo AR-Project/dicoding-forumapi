@@ -8,11 +8,11 @@ const ThreadsTableTestHelper = {
     title = 'Thread Title',
     body = 'Thread Body',
     date = new Date().toISOString(),
-  }){
+  }) {
     const query = {
       text: 'INSERT INTO threads VALUES ($1, $2, $3, $4, $5)',
-      values: [id, owner, title, body, date]
-    }
+      values: [id, owner, title, body, date],
+    };
 
     await pool.query(query);
   },
@@ -21,7 +21,7 @@ const ThreadsTableTestHelper = {
     const query = {
       text: 'SELECT * FROM threads WHERE id = $1',
       values: [id],
-    }
+    };
 
     const result = await pool.query(query);
     return result.rows;
@@ -29,7 +29,7 @@ const ThreadsTableTestHelper = {
 
   async cleanTable() {
     await pool.query('DELETE FROM threads WHERE 1=1');
-  }
+  },
 };
 
 module.exports = ThreadsTableTestHelper;

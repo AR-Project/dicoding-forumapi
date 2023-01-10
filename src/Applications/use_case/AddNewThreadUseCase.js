@@ -1,5 +1,4 @@
-const NewThread = require('../../Domains/threads/entities/NewThread')
-const Credentials = require('../../Domains/authorization/entities/Credentials')
+const NewThread = require('../../Domains/threads/entities/NewThread');
 
 class AddNewThreadUseCase {
   constructor({ threadRepository }) {
@@ -7,9 +6,9 @@ class AddNewThreadUseCase {
   }
 
   async execute(useCasePayload, ownerId) {
-    // Sanitize 
+    // Sanitize
     this._verifyOwnerId(ownerId);
-    const newThread = new NewThread({...useCasePayload, owner: ownerId});
+    const newThread = new NewThread({ ...useCasePayload, owner: ownerId });
 
     // Action
     return this._threadRepository.addNewThread(newThread);
@@ -17,7 +16,7 @@ class AddNewThreadUseCase {
 
   _verifyOwnerId(id) {
     if (!id) {
-      throw new Error('ADD_NEW_THREAD.MISSING_AUTHENTICATION')
+      throw new Error('ADD_NEW_THREAD.MISSING_AUTHENTICATION');
     }
     if (typeof id !== 'string') {
       throw new Error('ADD_NEW_THREAD.ID_NOT_MEET_DATA_TYPE_SPECIFICATION');

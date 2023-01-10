@@ -1,11 +1,11 @@
-const Credentials = require('../Credentials')
+const Credentials = require('../Credentials');
 
 describe('Credentials entities', () => {
   it('should throw error when credentials does not contain needed property', () => {
     // Arrange
     const credentials = {
-      username: 'username'
-    }
+      username: 'username',
+    };
 
     expect(() => new Credentials(credentials)).toThrowError('CREDENTIALS.NOT_CONTAIN_NEEDED_PROPERTY');
   });
@@ -14,8 +14,8 @@ describe('Credentials entities', () => {
     // Arrange
     const credentials = {
       id: 123,
-      username: 'username'
-    }
+      username: 'username',
+    };
 
     expect(() => new Credentials(credentials)).toThrowError('CREDENTIALS.NOT_MEET_DATA_TYPE_SPECIFICATION');
   });
@@ -24,7 +24,7 @@ describe('Credentials entities', () => {
     // Arrange
     const credentials = {
       id: 'user-123',
-      username: 'username'
+      username: 'username',
     };
 
     // Action
@@ -35,4 +35,4 @@ describe('Credentials entities', () => {
     expect(newCredentials.id).toEqual(credentials.id);
     expect(newCredentials.username).toEqual(credentials.username);
   });
-})
+});

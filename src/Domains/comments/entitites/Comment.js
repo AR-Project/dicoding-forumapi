@@ -8,20 +8,20 @@ class Comment {
   }
 
   _verifyPayload(payload) {
-    const {content, owner, threadId } = payload;
+    const { content, owner, threadId } = payload;
 
     if (!content) {
-      throw new Error('COMMENT.MISSING_CONTENT')
+      throw new Error('COMMENT.MISSING_CONTENT');
     }
     if (!owner) {
-      throw new Error('COMMENT.MISSING_OWNER')
+      throw new Error('COMMENT.MISSING_OWNER');
     }
     if (!threadId) {
-      throw new Error('COMMENT.MISSING_THREAD_ID')
+      throw new Error('COMMENT.MISSING_THREAD_ID');
     }
 
     if (typeof content !== 'string' || typeof owner !== 'string' || typeof threadId !== 'string') {
-      throw new Error ('COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION')
+      throw new Error('COMMENT.NOT_MEET_DATA_TYPE_SPECIFICATION');
     }
   }
 }

@@ -1,12 +1,12 @@
 class GetThreadUseCase {
-  constructor({threadRepository, commentRepository}) {
+  constructor({ threadRepository, commentRepository }) {
     this._threadRepository = threadRepository;
     this._commentRepository = commentRepository;
   }
 
   async execute(parameter) {
     if (!parameter) {
-      throw new Error('GET_THREAD_USECASE.MISSING_PARAMS')
+      throw new Error('GET_THREAD_USECASE.MISSING_PARAMS');
     }
 
     await this._threadRepository.verifyThread(parameter);
@@ -14,7 +14,7 @@ class GetThreadUseCase {
     const rawComments = await this._commentRepository.getAllCommentsByThreadId(parameter);
     thread.comments = this._sanitizeComments(rawComments);
 
-    return thread
+    return thread;
   }
 
   _sanitizeComments(comments) {
