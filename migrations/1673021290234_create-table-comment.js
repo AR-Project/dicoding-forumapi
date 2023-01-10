@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 exports.up = (pgm) => {
-  pgm.createTable('comments',{
+  pgm.createTable('comments', {
     id: {
       type: 'VARCHAR(50)',
       primaryKey: true,
@@ -24,8 +24,8 @@ exports.up = (pgm) => {
     is_deleted: {
       type: 'BOOLEAN',
       notNull: true,
-    }
-  })
+    },
+  });
 };
 
 exports.down = (pgm) => {
