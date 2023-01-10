@@ -295,6 +295,7 @@ describe('CommentREpositoryPostgress', () => {
         expect(servedComment.username).toBeDefined();
         expect(servedComment.content).toBeDefined();
         expect(servedComment.date).toBeDefined();
+        expect(servedComment.is_deleted).toBeDefined();
       });
     });
   });
