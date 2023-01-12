@@ -5,6 +5,24 @@ const GetThreadUseCase = require('../GetThreadUseCase');
 
 describe('GetThreadUseCase', () => {
   it('should throw error if any parameter is missing', async () => {
+    const invalidParameter = undefined;
+
+    const mockThreadRepository = new ThreadRepository();
+    const mockCommentRepository = new CommentRepository();
+    const mockReplyRepository = new ReplyRespository();
+
+    const getThreadUseCase = new GetThreadUseCase({
+      threadRepository: mockThreadRepository,
+      commentRepository: mockCommentRepository,
+      replyRepository: mockReplyRepository,
+    });
+
+    await expect(getThreadUseCase.execute(invalidParameter))
+      .rejects
+      .toThrowError('GET_THREAD_USECASE.MISSING_PARAMS');
+  });
+
+  it('should orchestrating get thread action correctly ', async () => {
     // Arrange
     const parameter = 'thread-123';
     const expectedGetThread = {
