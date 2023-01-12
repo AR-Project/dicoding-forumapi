@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 const pool = require('../src/Infrastructures/database/postgres/pool');
 
 const RepliesTableTestHelper = {
@@ -14,7 +15,7 @@ const RepliesTableTestHelper = {
       values: [id, owner, commentId, content, date, isDeleted],
     };
 
-    await pool.query(query)
+    await pool.query(query);
   },
 
   async findRepliesById(id) {
@@ -48,6 +49,6 @@ const RepliesTableTestHelper = {
     await pool.query('DELETE FROM replies WHERE 1=1');
   },
 
-}
+};
 
 module.exports = RepliesTableTestHelper;

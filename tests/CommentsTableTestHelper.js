@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /* eslint-disable camelcase */
 const pool = require('../src/Infrastructures/database/postgres/pool');
 
