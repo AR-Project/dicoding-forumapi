@@ -12,6 +12,7 @@ const createServer = require('../createServer');
 describe('/thread/{threadId}/comment endpoint', () => {
   // declare variable needed for test
   let accessToken;
+  let accessTokenSecond;
   let threadId;
   let commentId;
 
@@ -22,9 +23,18 @@ describe('/thread/{threadId}/comment endpoint', () => {
       password: 'secret',
       fullname: 'Dicoding Indonesia',
     };
+    const userRegisterPayloadSecond = {
+      username: 'userkedua',
+      password: 'secret',
+      fullname: 'User Nomor Dua',
+    };
     const userLoginPayload = {
       username: userRegisterPayload.username,
       password: userRegisterPayload.password,
+    };
+    const userLoginPayloadSecond = {
+      username: userRegisterPayloadSecond.username,
+      password: userRegisterPayloadSecond.password,
     };
 
     // CREATE SERVER
@@ -36,6 +46,11 @@ describe('/thread/{threadId}/comment endpoint', () => {
       url: '/users',
       payload: userRegisterPayload,
     });
+    await server.inject({
+      method: 'POST',
+      url: '/users',
+      payload: userRegisterPayloadSecond,
+    });
 
     // LOGIN and store access token
     const loginResponse = await server.inject({
@@ -43,8 +58,15 @@ describe('/thread/{threadId}/comment endpoint', () => {
       url: '/authentications',
       payload: userLoginPayload,
     });
+    const loginResponseSecond = await server.inject({
+      method: 'POST',
+      url: '/authentications',
+      payload: userLoginPayloadSecond,
+    });
     const loginResponseJson = await JSON.parse(loginResponse.payload);
     accessToken = loginResponseJson.data.accessToken;
+    const loginResponseSecondJson = await JSON.parse(loginResponseSecond.payload);
+    accessTokenSecond = loginResponseSecondJson.data.accessToken;
 
     // POST THREAD and store threadId
     const postThreadResponse = await server.inject({
@@ -89,6 +111,99 @@ describe('/thread/{threadId}/comment endpoint', () => {
   });
 
   describe('when POST /threads/{threadId}/comment/{commentId}/replies', () => {
+    it('should response 401 when header not contain accessToken', async () => {
+      // Arrange
+      const requestPayload = {
+        content: 'This is a reply',
+      };
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments/${commentId}/replies`,
+        payload: requestPayload,
+        // MISSING AUTHORIZATION
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(401);
+      expect(responseJson.message).toBeDefined();
+    });
+
+    it('should response 404 when threadId invalid, no such thread', async () => {
+      // Arrange
+      const requestPayload = {
+        content: 'This is a reply',
+      };
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'POST',
+        url: `/threads/xxInvalidThreadIdxx/comments/${commentId}/replies`,
+        payload: requestPayload,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toBeDefined();
+    });
+
+    it('should response 404 when commentId invalid, no such comment', async () => {
+      // Arrange
+      const requestPayload = {
+        content: 'This is a reply',
+      };
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments/xxInvalidCommentIdxx/replies`,
+        payload: requestPayload,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(404);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toBeDefined();
+    });
+
+    it('should response 400 when body payload mismatch / missing', async () => {
+      // Arrange
+      const requestPayload = {
+        wrongBody: '',
+      };
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'POST',
+        url: `/threads/${threadId}/comments/${commentId}/replies`,
+        payload: requestPayload,
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(400);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toBeDefined();
+    });
+
     it('should response 201 and persisted comment', async () => {
       // Arrange
       const requestPayload = {
@@ -115,8 +230,8 @@ describe('/thread/{threadId}/comment endpoint', () => {
   });
 
   describe('when DELETE /thread/{treadId}/comment/{commentId}/replies/{replyId}', () => {
-    it('should response 200 and soft-delete comment', async () => {
-      // Arrange
+    let replyId;
+    beforeEach(async () => {
       const requestPayload = {
         content: 'This is a reply',
       };
@@ -130,7 +245,49 @@ describe('/thread/{threadId}/comment endpoint', () => {
         },
       });
       const addReplyResponseJson = JSON.parse(addReplyResponse.payload);
-      const replyId = addReplyResponseJson.data.addedReply.id;
+      replyId = addReplyResponseJson.data.addedReply.id;
+    });
+
+    it('should response 401 when header not contain accessToken', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}/replies/${replyId}`,
+        // MISSING AUTHORIZATION
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(401);
+      expect(responseJson.message).toBeDefined();
+    });
+
+    it('should response 403 when reply is deleted not by its owner', async () => {
+      // Arrange
+      const server = await createServer(container);
+
+      // Action
+      const response = await server.inject({
+        method: 'DELETE',
+        url: `/threads/${threadId}/comments/${commentId}/replies/${replyId}`,
+        headers: {
+          Authorization: `Bearer ${accessTokenSecond}`,
+        },
+      });
+
+      // Assert
+      const responseJson = JSON.parse(response.payload);
+      expect(response.statusCode).toEqual(403);
+      expect(responseJson.status).toEqual('fail');
+      expect(responseJson.message).toBeDefined();
+    });
+
+    it('should response 200 and soft-delete comment', async () => {
+      // Arrange
+      const server = await createServer(container);
 
       // Action
       const response = await server.inject({
