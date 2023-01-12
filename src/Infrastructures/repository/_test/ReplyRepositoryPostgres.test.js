@@ -164,7 +164,8 @@ describe('ReplyRepositoryPostgres', () => {
   });
 
   describe('verifyReplyOwner function', () => {
-    beforeEach(async () => {
+    it('should throw AuthorizationError when reply owner NOT MATCH with user ID', async () => {
+      // Arrange
       const mockPayload = {
         content: 'This is a reply.',
       };
@@ -173,28 +174,34 @@ describe('ReplyRepositoryPostgres', () => {
         owner: 'user-123',
         commentId: 'comment-123',
       });
+      const validReplyId = 'reply-123';
+      const invalidUserId = 'user-999';
+
       const fakeIdGenerator = () => '123';
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
       await replyRepositoryPostgres.addReply(reply);
-    });
-
-    it('should throw AuthorizationError when reply owner NOT MATCH with user ID', async () => {
-      // Arrange
-      const validReplyId = 'reply-123';
-      const invalidUserId = 'user-999';
-      const fakeIdGenerator = () => '123';
-      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
 
       // Assert
       expect(replyRepositoryPostgres.verifyReplyOwner(validReplyId, invalidUserId))
         .rejects.toThrow(AuthorizationError);
     });
+
     it('should NOT throw AuthorizationError when reply owner match with user ID', async () => {
       // Arrange
+      const mockPayload = {
+        content: 'This is a reply.',
+      };
+      const reply = new Reply({
+        ...mockPayload,
+        owner: 'user-123',
+        commentId: 'comment-123',
+      });
       const validReplyId = 'reply-123';
       const validUserId = 'user-123';
+
       const fakeIdGenerator = () => '123';
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
+      await replyRepositoryPostgres.addReply(reply);
 
       // Assert
       expect(replyRepositoryPostgres.verifyReplyOwner(validReplyId, validUserId))
@@ -202,7 +209,7 @@ describe('ReplyRepositoryPostgres', () => {
     });
   });
 
-  describe('deleteComment function', () => {
+  describe('deleteReply function', () => {
     it('should change is_delete database reply value ', async () => {
       // Arrange
       const mockPayload = {

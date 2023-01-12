@@ -16,7 +16,7 @@ const AddedComment = require('../../../Domains/comments/entitites/AddedComment')
 // Repository
 const CommentRepositoryPostgres = require('../CommentRespositoryPostgres');
 
-describe('CommentREpositoryPostgress', () => {
+describe('CommentRepositoryPostgress', () => {
   beforeAll(async () => {
     const userA = {
       id: 'user-123',
@@ -147,8 +147,9 @@ describe('CommentREpositoryPostgress', () => {
     });
   });
 
-  describe('verifyCommentOwner', () => {
-    beforeEach(async () => {
+  describe('verifyCommentOwner function', () => {
+    it('should throw AuthorizationError when comment.owner does NOT MATCH with userId', async () => {
+      // Arrange
       const mockPayload = {
         content: 'This is comment',
       };
@@ -157,29 +158,34 @@ describe('CommentREpositoryPostgress', () => {
         owner: 'user-123',
         threadId: 'thread-123',
       });
+      const invalidUserId = 'user-999';
+      const validCommentId = 'comment-123';
+
       const fakeIdGenerator = () => '123';
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
       await commentRepositoryPostgres.addComment(comment);
-    });
 
-    it('should throw AuthorizationError when comment.owner does NOT MATCH with userId', async () => {
-      // Arrange
-      const invalidUserId = 'user-999';
-      const validCommentId = 'comment-123';
-      const fakeIdGenerator = () => '123';
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
-
-      // Assert
+      // Action and Assert
       expect(commentRepositoryPostgres.verifyCommentOwner(validCommentId, invalidUserId))
         .rejects.toThrow(AuthorizationError);
     });
 
     it('should not throw AuthorizationError when comment.owner MATCH with userId', async () => {
       // Arrange
+      const mockPayload = {
+        content: 'This is comment',
+      };
+      const comment = new Comment({
+        ...mockPayload,
+        owner: 'user-123',
+        threadId: 'thread-123',
+      });
       const validUserId = 'user-123';
       const validCommentId = 'comment-123';
+
       const fakeIdGenerator = () => '123';
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
+      await commentRepositoryPostgres.addComment(comment);
 
       // Assert
       expect(commentRepositoryPostgres.verifyCommentOwner(validCommentId, validUserId))
