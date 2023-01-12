@@ -27,6 +27,26 @@ describe('AddNewThreadUseCase', () => {
       .toThrowError('ADD_NEW_THREAD.MISSING_AUTHENTICATION');
   });
 
+  it('should throw error if owner id is wrong data type', async () => {
+    // Arrange
+    const useCasePayload = {
+      title: 'Thread Title',
+      body: 'Thread body.',
+    };
+    const ownerId = 123;
+
+    // create dependencies of use case, for usecase test.
+    const mockThreadRepository = new ThreadRepository();
+
+    // create use case instance
+    const addNewThreadUseCase = new AddNewThreadUseCase({
+      threadRepository: mockThreadRepository,
+    });
+
+    await expect(addNewThreadUseCase.execute(useCasePayload, ownerId)).rejects
+      .toThrowError('ADD_NEW_THREAD.ID_NOT_MEET_DATA_TYPE_SPECIFICATION');
+  });
+
   it('should orchestrating the add new thread action correctly', async () => {
     // Arrange
     const useCasePayload = {
