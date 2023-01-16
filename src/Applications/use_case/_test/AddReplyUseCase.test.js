@@ -48,7 +48,7 @@ describe('AddReplyUseCase', () => {
     const commentId = 'comment-123';
 
     const expectedAddedReply = new AddedReply({
-      id: 'reply-id',
+      id: 'reply-123',
       content: useCasePayload.content,
       owner: ownerId,
     });
@@ -56,7 +56,11 @@ describe('AddReplyUseCase', () => {
     // Create dependencies and mocking needed it function
     const mockReplyRepository = new ReplyRepository();
     mockReplyRepository.addReply = jest.fn()
-      .mockImplementation(() => Promise.resolve(expectedAddedReply));
+      .mockImplementation(() => Promise.resolve(new AddedReply({
+        id: 'reply-123',
+        content: useCasePayload.content,
+        owner: ownerId,
+      })));
 
     const mockCommentRepository = new CommentRepository();
     mockCommentRepository.verifyComment = jest.fn().mockImplementation(() => Promise.resolve());
