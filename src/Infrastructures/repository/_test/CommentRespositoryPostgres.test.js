@@ -275,9 +275,43 @@ describe('CommentRepositoryPostgress', () => {
         },
       ];
 
-      // await comments.forEach(async (comment) => {
-      //   await CommentsTableTestHelper.addComment({ ...comment });
-      // });
+      const expectedComments = [
+        {
+          id: 'comment-123',
+          username: 'usera',
+          content: 'komentar pertama dilapak utama',
+          date: 'date1',
+          is_deleted: false,
+        },
+        {
+          id: 'comment-124',
+          username: 'userb',
+          content: 'komentar kedua dilapak utama',
+          date: 'date2',
+          is_deleted: false,
+        },
+        {
+          id: 'comment-125',
+          username: 'usera',
+          content: 'komentar ketiga dilapak utama',
+          date: 'date3',
+          is_deleted: false,
+        },
+        {
+          id: 'comment-126',
+          username: 'userb',
+          content: 'komentar keempat lapak utama tapi dihapus',
+          date: 'date4',
+          is_deleted: true,
+        },
+        {
+          id: 'comment-127',
+          username: 'usera',
+          content: 'komentar kelima lapak utama',
+          date: 'date5',
+          is_deleted: false,
+        },
+      ];
 
       // eslint-disable-next-line no-restricted-syntax
       for (const comment of comments) {
@@ -296,13 +330,17 @@ describe('CommentRepositoryPostgress', () => {
       // Assert
       expect(result).toHaveLength(5);
       expect(totalCommentsInDatabase).toBe(6);
-      result.forEach((servedComment) => {
-        expect(servedComment.id).toBeDefined();
-        expect(servedComment.username).toBeDefined();
-        expect(servedComment.content).toBeDefined();
-        expect(servedComment.date).toBeDefined();
-        expect(servedComment.is_deleted).toBeDefined();
-      });
+
+      for (let i = 0; i < result.length; i += 1) {
+        expect(result[i].id).toBeDefined();
+        expect(result[i].username).toBeDefined();
+        expect(result[i].content).toBeDefined();
+        expect(result[i].date).toBeDefined();
+        expect(result[i].is_deleted).toBeDefined();
+        expect(result[i].threadId).not.toBeDefined();
+        expect(result[i].owner).not.toBeDefined();
+        expect(result[i]).toStrictEqual(expectedComments[i]);
+      }
     });
   });
 });

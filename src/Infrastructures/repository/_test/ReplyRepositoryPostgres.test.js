@@ -252,8 +252,8 @@ describe('ReplyRepositoryPostgres', () => {
           id: 'reply-124',
           owner: 'user-123',
           commentId: 'comment-123',
-          content: 'balasan terhapus komentar utama',
-          date: 'date1',
+          content: 'balasan komentar utama',
+          date: 'date2',
           is_deleted: true,
         },
         {
@@ -261,8 +261,24 @@ describe('ReplyRepositoryPostgres', () => {
           owner: 'user-123',
           commentId: 'comment-124',
           content: 'balasan dikomentar sebelah',
+          date: 'date3',
+          is_deleted: false,
+        },
+      ];
+      const expectedReplies = [
+        {
+          id: 'reply-123',
+          username: 'usera',
+          content: 'balasan komentar utama',
           date: 'date1',
           is_deleted: false,
+        },
+        {
+          id: 'reply-124',
+          username: 'usera',
+          content: 'balasan komentar utama',
+          date: 'date2',
+          is_deleted: true,
         },
       ];
 
@@ -280,13 +296,16 @@ describe('ReplyRepositoryPostgres', () => {
 
       expect(result).toHaveLength(2);
       expect(totalRepliesInDatabase).toBe(3);
-      result.forEach((servedReply) => {
-        expect(servedReply.id).toBeDefined();
-        expect(servedReply.username).toBeDefined();
-        expect(servedReply.content).toBeDefined();
-        expect(servedReply.date).toBeDefined();
-        expect(servedReply.is_deleted).toBeDefined();
-      });
+      for (let i = 0; i < result.length; i += 1) {
+        expect(result[i].id).toBeDefined();
+        expect(result[i].username).toBeDefined();
+        expect(result[i].content).toBeDefined();
+        expect(result[i].date).toBeDefined();
+        expect(result[i].is_deleted).toBeDefined();
+        expect(result[i].owner).not.toBeDefined();
+        expect(result[i].commentId).not.toBeDefined();
+        expect(result[i]).toStrictEqual(expectedReplies[i]);
+      }
     });
   });
 });

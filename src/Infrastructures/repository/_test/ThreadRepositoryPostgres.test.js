@@ -132,6 +132,13 @@ describe('ThreadRepositoryPostgress', () => {
         owner: 'user-123',
       });
       const validThreadId = 'thread-123';
+      const expectedResult = {
+        id: 'thread-123',
+        title: newThread.title,
+        body: newThread.body,
+        date: 'date',
+        username: 'dicoding',
+      };
       // repo and stub
       const fakeIdGenerator = () => '123';
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
@@ -144,10 +151,16 @@ describe('ThreadRepositoryPostgress', () => {
       const result = await threadRepositoryPostgres.getThread(validThreadId);
       expect(thread).toHaveLength(1);
       expect(result.id).toBeDefined();
+      expect(result.id).toBe(expectedResult.id);
       expect(result.title).toBeDefined();
+      expect(result.title).toBe(expectedResult.title);
       expect(result.body).toBeDefined();
+      expect(result.body).toBe(expectedResult.body);
       expect(result.date).toBeDefined();
+      // cant compare date result because it dynamically generated
+      // at exact time data is written on database
       expect(result.username).toBeDefined();
+      expect(result.username).toBe(expectedResult.username);
     });
   });
 });
