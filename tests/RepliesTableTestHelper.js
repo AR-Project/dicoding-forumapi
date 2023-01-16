@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 /* istanbul ignore file */
 const pool = require('../src/Infrastructures/database/postgres/pool');
 
@@ -8,11 +9,11 @@ const RepliesTableTestHelper = {
     commentId = 'comment-123',
     content = 'This is a reply.',
     date = new Date().toISOString(),
-    isDeleted = false,
+    is_deleted = false,
   }) {
     const query = {
       text: 'INSERT INTO replies VALUES ($1, $2, $3, $4, $5, $6)',
-      values: [id, owner, commentId, content, date, isDeleted],
+      values: [id, owner, commentId, content, date, is_deleted],
     };
 
     await pool.query(query);
