@@ -126,30 +126,46 @@ describe('ThreadRepositoryPostgress', () => {
   describe('getThread function', () => {
     it('should return correct payload when get called', async () => {
       // Arrange
-      const newThread = new NewThread({
-        title: 'A Thread Title',
-        body: 'Body content of a thread.',
-        owner: 'user-123',
-      });
-      const validThreadId = 'thread-123';
+      const threads = [
+        {
+          id: 'thread-123',
+          owner: 'user-123',
+          title: 'First Thread Title',
+          body: 'First Thread',
+          date: 'date-1',
+        },
+        {
+          id: 'thread-999',
+          owner: 'user-123',
+          title: 'Second Thread Title',
+          body: 'Second Thread',
+          date: 'date-2',
+        },
+      ];
+
+      for (let i = 0; i < threads.length; i += 1) {
+        // eslint-disable-next-line no-await-in-loop
+        await ThreadsTableTestHelper.addThread({ ...threads[i] });
+      }
       const expectedResult = {
         id: 'thread-123',
-        title: newThread.title,
-        body: newThread.body,
-        date: 'date',
+        title: 'First Thread Title',
+        body: 'First Thread',
+        date: 'date-1',
         username: 'dicoding',
       };
       // repo and stub
       const fakeIdGenerator = () => '123';
       const threadRepositoryPostgres = new ThreadRepositoryPostgres(pool, fakeIdGenerator);
-      await threadRepositoryPostgres.addNewThread(newThread);
 
       // Pre-Assert
-      const thread = await ThreadsTableTestHelper.findThreadsById(validThreadId);
+      const targetThread = await ThreadsTableTestHelper.findThreadsById('thread-123');
+      const dummyThread = await ThreadsTableTestHelper.findThreadsById('thread-999');
 
       // Assert
-      const result = await threadRepositoryPostgres.getThread(validThreadId);
-      expect(thread).toHaveLength(1);
+      const result = await threadRepositoryPostgres.getThread('thread-123');
+      expect(targetThread).toHaveLength(1);
+      expect(dummyThread).toHaveLength(1);
       expect(result.id).toBeDefined();
       expect(result.id).toBe(expectedResult.id);
       expect(result.title).toBeDefined();
@@ -157,10 +173,10 @@ describe('ThreadRepositoryPostgress', () => {
       expect(result.body).toBeDefined();
       expect(result.body).toBe(expectedResult.body);
       expect(result.date).toBeDefined();
-      // cant compare date result because it dynamically generated
-      // at exact time data is written on database
+      expect(result.date).toBe(expectedResult.date);
       expect(result.username).toBeDefined();
       expect(result.username).toBe(expectedResult.username);
+      expect(result).toStrictEqual(expectedResult);
     });
   });
 });
