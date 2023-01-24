@@ -125,17 +125,17 @@ describe('ReplyRepositoryPostgres', () => {
 
   describe('verifyReply function', () => {
     beforeEach(async () => {
-      const mockPayload = {
-        content: 'This is a reply',
-      };
-      const reply = new Reply({
-        ...mockPayload,
+      // Arrange
+      const reply = {
+        id: 'reply-123',
         owner: 'user-123',
         commentId: 'comment-123',
-      });
-      const fakeIdGenerator = () => '123';
-      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
-      await replyRepositoryPostgres.addReply(reply);
+        content: 'reply content',
+        date: 'date-1',
+        is_deleted: false,
+      };
+
+      await RepliesTableTestHelper.addReply(reply);
     });
 
     it('should throw NotFoundError when replyId is invalid', async () => {
@@ -164,7 +164,7 @@ describe('ReplyRepositoryPostgres', () => {
   });
 
   describe('verifyReplyOwner function', () => {
-    it('should throw AuthorizationError when reply owner NOT MATCH with user ID', async () => {
+    beforeEach(async () => {
       // Arrange
       const reply = {
         id: 'reply-123',
@@ -176,6 +176,11 @@ describe('ReplyRepositoryPostgres', () => {
       };
 
       await RepliesTableTestHelper.addReply(reply);
+      const result = await RepliesTableTestHelper.findRepliesById('reply-123');
+      console.log(result);
+    });
+
+    it('should throw AuthorizationError when reply owner NOT MATCH with user ID', async () => {
       const validReplyId = 'reply-123';
       const invalidUserId = 'user-999';
 
@@ -185,22 +190,10 @@ describe('ReplyRepositoryPostgres', () => {
 
       // Assert
       expect(replyRepositoryPostgres.verifyReplyOwner(validReplyId, invalidUserId))
-        .rejects.toThrow(AuthorizationError);
+        .rejects.toThrowError(AuthorizationError);
     });
 
     it('should NOT throw AuthorizationError when reply owner match with user ID', async () => {
-      // Arrange
-      const reply = {
-        id: 'reply-123',
-        owner: 'user-123',
-        commentId: 'comment-123',
-        content: 'reply content',
-        date: 'date-1',
-        is_deleted: false,
-      };
-
-      await RepliesTableTestHelper.addReply(reply);
-
       const validReplyId = 'reply-123';
       const validUserId = 'user-123';
 
@@ -209,7 +202,7 @@ describe('ReplyRepositoryPostgres', () => {
 
       // Assert
       expect(replyRepositoryPostgres.verifyReplyOwner(validReplyId, validUserId))
-        .resolves.not.toThrow(AuthorizationError);
+        .resolves.not.toThrowError(AuthorizationError);
     });
   });
 

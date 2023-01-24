@@ -159,6 +159,8 @@ describe('CommentRepositoryPostgress', () => {
         is_deleted: false,
       };
       await CommentsTableTestHelper.addComment(comment);
+      const result = await CommentsTableTestHelper.findCommentsById('comment-123');
+      console.log(result);
     });
 
     it('should throw AuthorizationError when comment.owner does NOT MATCH with userId', async () => {
@@ -171,7 +173,7 @@ describe('CommentRepositoryPostgress', () => {
 
       // Action and Assert
       expect(commentRepositoryPostgres.verifyCommentOwner(validCommentId, invalidUserId))
-        .rejects.toThrow(AuthorizationError);
+        .rejects.toThrowError(AuthorizationError);
     });
 
     it('should not throw AuthorizationError when comment.owner MATCH with userId', async () => {
@@ -184,7 +186,7 @@ describe('CommentRepositoryPostgress', () => {
 
       // Assert
       expect(commentRepositoryPostgres.verifyCommentOwner(validCommentId, validUserId))
-        .resolves.not.toThrow(AuthorizationError);
+        .resolves.not.toThrowError(AuthorizationError);
     });
   });
 
