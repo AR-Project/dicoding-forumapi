@@ -166,20 +166,22 @@ describe('ReplyRepositoryPostgres', () => {
   describe('verifyReplyOwner function', () => {
     it('should throw AuthorizationError when reply owner NOT MATCH with user ID', async () => {
       // Arrange
-      const mockPayload = {
-        content: 'This is a reply.',
-      };
-      const reply = new Reply({
-        ...mockPayload,
+      const reply = {
+        id: 'reply-123',
         owner: 'user-123',
         commentId: 'comment-123',
-      });
+        content: 'reply content',
+        date: 'date-1',
+        is_deleted: false,
+      };
+
+      await RepliesTableTestHelper.addReply(reply);
       const validReplyId = 'reply-123';
       const invalidUserId = 'user-999';
 
       const fakeIdGenerator = () => '123';
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
-      await replyRepositoryPostgres.addReply(reply);
+      // await replyRepositoryPostgres.addReply(reply);
 
       // Assert
       expect(replyRepositoryPostgres.verifyReplyOwner(validReplyId, invalidUserId))
@@ -188,20 +190,22 @@ describe('ReplyRepositoryPostgres', () => {
 
     it('should NOT throw AuthorizationError when reply owner match with user ID', async () => {
       // Arrange
-      const mockPayload = {
-        content: 'This is a reply.',
-      };
-      const reply = new Reply({
-        ...mockPayload,
+      const reply = {
+        id: 'reply-123',
         owner: 'user-123',
         commentId: 'comment-123',
-      });
+        content: 'reply content',
+        date: 'date-1',
+        is_deleted: false,
+      };
+
+      await RepliesTableTestHelper.addReply(reply);
+
       const validReplyId = 'reply-123';
       const validUserId = 'user-123';
 
       const fakeIdGenerator = () => '123';
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
-      await replyRepositoryPostgres.addReply(reply);
 
       // Assert
       expect(replyRepositoryPostgres.verifyReplyOwner(validReplyId, validUserId))
@@ -212,17 +216,20 @@ describe('ReplyRepositoryPostgres', () => {
   describe('deleteReply function', () => {
     it('should change is_delete database reply value ', async () => {
       // Arrange
-      const mockPayload = {
-        content: 'This is a reply.',
-      };
-      const reply = new Reply({
-        ...mockPayload,
+      const reply = {
+        id: 'reply-123',
         owner: 'user-123',
         commentId: 'comment-123',
-      });
+        content: 'reply content',
+        date: 'date-1',
+        is_deleted: false,
+      };
+
+      await RepliesTableTestHelper.addReply(reply);
+
       const fakeIdGenerator = () => '123';
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
-      await replyRepositoryPostgres.addReply(reply);
+
       const prevResult = await RepliesTableTestHelper.findRepliesById('reply-123');
 
       // Action
@@ -306,6 +313,100 @@ describe('ReplyRepositoryPostgres', () => {
         expect(result[i].commentId).not.toBeDefined();
         expect(result[i]).toStrictEqual(expectedReplies[i]);
       }
+    });
+  });
+
+  describe('getAllRepliesByCommentIds function', () => {
+    it('should fetch all replies using comment-id array', async () => {
+      // Arrange
+      const replies = [
+        {
+          id: 'reply-123',
+          owner: 'user-123',
+          commentId: 'comment-123',
+          content: 'balasan pertama komentar utama',
+          date: 'date1',
+          is_deleted: false,
+        },
+        {
+          id: 'reply-124',
+          owner: 'user-123',
+          commentId: 'comment-123',
+          content: 'balasan kedua komentar utama',
+          date: 'date2',
+          is_deleted: true,
+        },
+        {
+          id: 'reply-125',
+          owner: 'user-123',
+          commentId: 'comment-124',
+          content: 'balasan pertama dikomentar sebelah',
+          date: 'date3',
+          is_deleted: false,
+        },
+        {
+          id: 'reply-126',
+          owner: 'user-123',
+          commentId: 'comment-124',
+          content: 'balasan kedua dikomentar sebelah',
+          date: 'date4',
+          is_deleted: false,
+        },
+      ];
+
+      const parameter = ['comment-123', 'comment-124'];
+
+      const expectedReplies = [
+        {
+          id: 'reply-123',
+          commentId: 'comment-123',
+          username: 'usera',
+          content: 'balasan pertama komentar utama',
+          date: 'date1',
+          is_deleted: false,
+        },
+        {
+          id: 'reply-124',
+          commentId: 'comment-123',
+          username: 'usera',
+          content: 'balasan kedua komentar utama',
+          date: 'date2',
+          is_deleted: true,
+        },
+        {
+          id: 'reply-125',
+          commentId: 'comment-124',
+          username: 'usera',
+          content: 'balasan pertama dikomentar sebelah',
+          date: 'date3',
+          is_deleted: false,
+        },
+        {
+          id: 'reply-126',
+          commentId: 'comment-124',
+          username: 'usera',
+          content: 'balasan kedua dikomentar sebelah',
+          date: 'date4',
+          is_deleted: false,
+        },
+      ];
+
+      // eslint-disable-next-line no-restricted-syntax
+      for (const reply of replies) {
+        // eslint-disable-next-line no-await-in-loop
+        await RepliesTableTestHelper.addReply({ ...reply });
+      }
+
+      const fakeIdGenerator = () => '123';
+      const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
+      const totalRepliesInDatabase = await RepliesTableTestHelper.countTotalReplies();
+
+      // Action
+      const result = await replyRepositoryPostgres.getAllRepliesByCommentIds(parameter);
+
+      // Assert
+      expect(totalRepliesInDatabase).toBe(4);
+      expect(result).toStrictEqual(expectedReplies);
     });
   });
 });
