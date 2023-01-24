@@ -148,22 +148,26 @@ describe('CommentRepositoryPostgress', () => {
   });
 
   describe('verifyCommentOwner function', () => {
-    it('should throw AuthorizationError when comment.owner does NOT MATCH with userId', async () => {
+    beforeEach(async () => {
       // Arrange
-      const mockPayload = {
-        content: 'This is comment',
-      };
-      const comment = new Comment({
-        ...mockPayload,
+      const comment = {
+        id: 'comment-123',
         owner: 'user-123',
-        threadId: 'thread-123',
-      });
+        thread_id: 'thread-123',
+        content: 'comment content',
+        date: 'date-1',
+        is_deleted: false,
+      };
+      await CommentsTableTestHelper.addComment(comment);
+    });
+
+    it('should throw AuthorizationError when comment.owner does NOT MATCH with userId', async () => {
       const invalidUserId = 'user-999';
       const validCommentId = 'comment-123';
 
       const fakeIdGenerator = () => '123';
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
-      await commentRepositoryPostgres.addComment(comment);
+      // await commentRepositoryPostgres.addComment(comment);
 
       // Action and Assert
       expect(commentRepositoryPostgres.verifyCommentOwner(validCommentId, invalidUserId))
@@ -171,21 +175,12 @@ describe('CommentRepositoryPostgress', () => {
     });
 
     it('should not throw AuthorizationError when comment.owner MATCH with userId', async () => {
-      // Arrange
-      const mockPayload = {
-        content: 'This is comment',
-      };
-      const comment = new Comment({
-        ...mockPayload,
-        owner: 'user-123',
-        threadId: 'thread-123',
-      });
       const validUserId = 'user-123';
       const validCommentId = 'comment-123';
 
       const fakeIdGenerator = () => '123';
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
-      await commentRepositoryPostgres.addComment(comment);
+      // await commentRepositoryPostgres.addComment(comment);
 
       // Assert
       expect(commentRepositoryPostgres.verifyCommentOwner(validCommentId, validUserId))
@@ -196,17 +191,20 @@ describe('CommentRepositoryPostgress', () => {
   describe('deleteComment', () => {
     it('should change is_delete comment value on database', async () => {
       // Arrange
-      const mockPayload = {
-        content: 'This is comment',
-      };
-      const comment = new Comment({
-        ...mockPayload,
+      const comment = {
+        id: 'comment-123',
         owner: 'user-123',
-        threadId: 'thread-123',
-      });
+        thread_id: 'thread-123',
+        content: 'comment content',
+        date: 'date-1',
+        is_deleted: false,
+      };
+      await CommentsTableTestHelper.addComment(comment);
+
       const fakeIdGenerator = () => '123';
       const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, fakeIdGenerator);
-      await commentRepositoryPostgres.addComment(comment);
+
+      // await commentRepositoryPostgres.addComment(comment);
       const prevResult = await CommentsTableTestHelper.findCommentsById('comment-123');
 
       // Action
