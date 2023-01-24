@@ -19,6 +19,10 @@ class ReplyRespository {
   async getAllRepliesByCommentId(threadId) {
     throw new Error('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED');
   }
+
+  async getAllRepliesByCommentIds(commentIds) {
+    throw new Error('REPLY_REPOSITORY.METHOD_NOT_IMPLEMENTED');
+  }
 }
 
 module.exports = ReplyRespository;
