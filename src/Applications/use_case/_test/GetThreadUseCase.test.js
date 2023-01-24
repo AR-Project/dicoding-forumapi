@@ -5,6 +5,7 @@ const GetThreadUseCase = require('../GetThreadUseCase');
 
 describe('GetThreadUseCase', () => {
   it('should throw error if any parameter is missing', async () => {
+    // Arrange
     const invalidParameter = undefined;
 
     const mockThreadRepository = new ThreadRepository();
@@ -16,7 +17,7 @@ describe('GetThreadUseCase', () => {
       commentRepository: mockCommentRepository,
       replyRepository: mockReplyRepository,
     });
-
+    // Action & assert
     await expect(getThreadUseCase.execute(invalidParameter))
       .rejects
       .toThrowError('GET_THREAD_USECASE.MISSING_PARAMS');
@@ -24,7 +25,6 @@ describe('GetThreadUseCase', () => {
 
   it('should orchestrating get thread action correctly ', async () => {
     // Arrange
-    const parameter = 'thread-123';
     const expectedGetThread = {
       id: 'thread-123',
       title: 'Thread Title',
@@ -32,6 +32,7 @@ describe('GetThreadUseCase', () => {
       date: 'date',
       username: 'username',
     };
+    const parameter = 'thread-123';
 
     const expectedGetAllCommentsByThreadId = [
       {
@@ -49,20 +50,31 @@ describe('GetThreadUseCase', () => {
         is_deleted: true,
       },
     ];
+    const commentIdParameter = ['comment-123', 'comment-456'];
 
-    const expectedGetAllRepliesByCommentId = [
+    const expectedGetAllRepliesByCommentIds = [
       {
         id: 'reply-123',
+        commentId: 'comment-123',
         username: 'username',
-        date: 'date',
+        date: 'date1',
         content: 'Reply #1 content.',
         is_deleted: true,
       },
       {
         id: 'reply-124',
+        commentId: 'comment-123',
         username: 'username',
-        date: 'date',
+        date: 'date2',
         content: 'Reply #2 content.',
+        is_deleted: false,
+      },
+      {
+        id: 'reply-125',
+        commentId: 'comment-456',
+        username: 'username',
+        date: 'date3',
+        content: 'Reply #3 content.',
         is_deleted: false,
       },
     ];
@@ -81,16 +93,16 @@ describe('GetThreadUseCase', () => {
           content: expectedGetAllCommentsByThreadId[0].content,
           replies: [
             {
-              id: expectedGetAllRepliesByCommentId[0].id,
+              id: expectedGetAllRepliesByCommentIds[0].id,
               content: '**balasan telah dihapus**',
-              username: expectedGetAllRepliesByCommentId[0].username,
-              date: expectedGetAllRepliesByCommentId[0].date,
+              username: expectedGetAllRepliesByCommentIds[0].username,
+              date: expectedGetAllRepliesByCommentIds[0].date,
             },
             {
-              id: expectedGetAllRepliesByCommentId[1].id,
-              content: expectedGetAllRepliesByCommentId[1].content,
-              username: expectedGetAllRepliesByCommentId[1].username,
-              date: expectedGetAllRepliesByCommentId[1].date,
+              id: expectedGetAllRepliesByCommentIds[1].id,
+              content: expectedGetAllRepliesByCommentIds[1].content,
+              username: expectedGetAllRepliesByCommentIds[1].username,
+              date: expectedGetAllRepliesByCommentIds[1].date,
             },
           ],
         },
@@ -101,16 +113,10 @@ describe('GetThreadUseCase', () => {
           content: '**komentar telah dihapus**',
           replies: [
             {
-              id: expectedGetAllRepliesByCommentId[0].id,
-              content: '**balasan telah dihapus**',
-              username: expectedGetAllRepliesByCommentId[0].username,
-              date: expectedGetAllRepliesByCommentId[0].date,
-            },
-            {
-              id: expectedGetAllRepliesByCommentId[1].id,
-              content: expectedGetAllRepliesByCommentId[1].content,
-              username: expectedGetAllRepliesByCommentId[1].username,
-              date: expectedGetAllRepliesByCommentId[1].date,
+              id: expectedGetAllRepliesByCommentIds[2].id,
+              content: expectedGetAllRepliesByCommentIds[2].content,
+              username: expectedGetAllRepliesByCommentIds[2].username,
+              date: expectedGetAllRepliesByCommentIds[2].date,
             },
           ],
         },
@@ -127,8 +133,8 @@ describe('GetThreadUseCase', () => {
       .mockImplementation(() => Promise.resolve(expectedGetThread));
     mockCommentRepository.getAllCommentsByThreadId = jest.fn()
       .mockImplementation(() => Promise.resolve(expectedGetAllCommentsByThreadId));
-    mockReplyRepository.getAllRepliesByCommentId = jest.fn()
-      .mockImplementation(() => Promise.resolve(expectedGetAllRepliesByCommentId));
+    mockReplyRepository.getAllRepliesByCommentIds = jest.fn()
+      .mockImplementation(() => Promise.resolve(expectedGetAllRepliesByCommentIds));
 
     const getThreadUseCase = new GetThreadUseCase({
       threadRepository: mockThreadRepository,
@@ -146,14 +152,13 @@ describe('GetThreadUseCase', () => {
         expect(reply.is_deleted).toBeUndefined();
       });
     });
-
     expect(mockThreadRepository.verifyThread)
       .toBeCalledWith(parameter);
     expect(mockThreadRepository.getThread)
       .toBeCalledWith(parameter);
     expect(mockCommentRepository.getAllCommentsByThreadId)
       .toBeCalledWith(parameter);
-    expect(mockReplyRepository.getAllRepliesByCommentId)
-      .toBeCalledTimes(2);
+    expect(mockReplyRepository.getAllRepliesByCommentIds)
+      .toBeCalledWith(commentIdParameter);
   });
 });

@@ -6,31 +6,30 @@ class GetThreadUseCase {
   }
 
   async execute(parameter) {
-    // Verify Parameter
+    const _commentIds = [];
+
     if (!parameter) {
       throw new Error('GET_THREAD_USECASE.MISSING_PARAMS');
     }
-    // Verify thread
-    await this._threadRepository.verifyThread(parameter);
 
-    // Fetch Thread
+    // prepare thread
+    await this._threadRepository.verifyThread(parameter);
     const thread = await this._threadRepository.getThread(parameter);
 
-    // Fetch All Comment using parameter: threadId
+    // prepare comments
     const rawComments = await this._commentRepository.getAllCommentsByThreadId(parameter);
+    for (let i = 0; i < rawComments.length; i += 1) {
+      _commentIds.push(rawComments[i].id);
+    }
+    thread.comments = this._sanitizeComments(rawComments); // modify thread object
 
-    // Sanitize Comment
-    thread.comments = this._sanitizeComments(rawComments);
-
-    // Iterate every comment
-    for (let i = 0; i < thread.comments.length; i += 1) {
-      // Fetch All Replies using parameter: current threadId
-      // eslint-disable-next-line no-await-in-loop
-      const rawReplies = await this._replyRepository
-        .getAllRepliesByCommentId(thread.comments[i].id);
-
-      // Sanitize Replies and store into EACH comments
-      thread.comments[i].replies = this._sanitizeReplies(rawReplies);
+    // prepare replies
+    const rawReplies = await this._replyRepository.getAllRepliesByCommentIds(_commentIds);
+    for (let i = 0; i < rawReplies.length; i += 1) {
+      const currentReply = rawReplies[i];
+      const commentIndex = thread.comments
+        .findIndex((comment) => comment.id === currentReply.commentId);
+      thread.comments[commentIndex].replies.push(this._sanitizeReply(currentReply));
     }
 
     return thread;
@@ -42,16 +41,17 @@ class GetThreadUseCase {
       username: comment.username,
       date: comment.date,
       content: comment.is_deleted ? '**komentar telah dihapus**' : comment.content,
+      replies: [],
     }));
   }
 
-  _sanitizeReplies(replies) {
-    return replies.map((reply) => ({
+  _sanitizeReply(reply) {
+    return {
       id: reply.id,
       username: reply.username,
       date: reply.date,
       content: reply.is_deleted ? '**balasan telah dihapus**' : reply.content,
-    }));
+    };
   }
 }
 
