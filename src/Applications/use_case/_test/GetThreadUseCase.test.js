@@ -1,6 +1,7 @@
 const CommentRepository = require('../../../Domains/comments/CommentRepository');
 const ReplyRespository = require('../../../Domains/replies/ReplyRepository');
 const ThreadRepository = require('../../../Domains/threads/ThreadRepository');
+const UserCommentLikesRepository = require('../../../Domains/userCommentLikes/UserCommentLikesRepository');
 const GetThreadUseCase = require('../GetThreadUseCase');
 
 describe('GetThreadUseCase', () => {
@@ -11,11 +12,14 @@ describe('GetThreadUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRespository();
+    const mockUserCommentLikesRepository = new UserCommentLikesRepository();
 
     const getThreadUseCase = new GetThreadUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
       replyRepository: mockReplyRepository,
+      userCommentLikesRepository: mockUserCommentLikesRepository,
+
     });
     // Action & assert
     await expect(getThreadUseCase.execute(invalidParameter))
@@ -79,6 +83,19 @@ describe('GetThreadUseCase', () => {
       },
     ];
 
+    const expectedLikesCount = [
+      {
+        commentId: 'comment-123',
+        count: 2,
+      },
+      {
+        commentId: 'comment-456',
+        count: 1,
+      },
+    ];
+
+    const likesIdparameter = ['comment-123', 'comment-456'];
+
     const expectedGetThreadResult = {
       id: expectedGetThread.id,
       title: expectedGetThread.title,
@@ -91,6 +108,7 @@ describe('GetThreadUseCase', () => {
           username: expectedGetAllCommentsByThreadId[0].username,
           date: expectedGetAllCommentsByThreadId[0].date,
           content: expectedGetAllCommentsByThreadId[0].content,
+          likeCount: expectedLikesCount[0].count,
           replies: [
             {
               id: expectedGetAllRepliesByCommentIds[0].id,
@@ -111,6 +129,7 @@ describe('GetThreadUseCase', () => {
           username: expectedGetAllCommentsByThreadId[1].username,
           date: expectedGetAllCommentsByThreadId[1].date,
           content: '**komentar telah dihapus**',
+          likeCount: expectedLikesCount[1].count,
           replies: [
             {
               id: expectedGetAllRepliesByCommentIds[2].id,
@@ -126,6 +145,7 @@ describe('GetThreadUseCase', () => {
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
     const mockReplyRepository = new ReplyRespository();
+    const mockUserCommentLikesRepository = new UserCommentLikesRepository();
 
     mockThreadRepository.verifyThread = jest.fn()
       .mockImplementation(() => Promise.resolve());
@@ -135,11 +155,14 @@ describe('GetThreadUseCase', () => {
       .mockImplementation(() => Promise.resolve(expectedGetAllCommentsByThreadId));
     mockReplyRepository.getAllRepliesByCommentIds = jest.fn()
       .mockImplementation(() => Promise.resolve(expectedGetAllRepliesByCommentIds));
+    mockUserCommentLikesRepository.getLikesNumberByCommentIds = jest.fn()
+      .mockImplementation(() => Promise.resolve(expectedLikesCount));
 
     const getThreadUseCase = new GetThreadUseCase({
       threadRepository: mockThreadRepository,
       commentRepository: mockCommentRepository,
       replyRepository: mockReplyRepository,
+      userCommentLikesRepository: mockUserCommentLikesRepository,
     });
 
     const actualGetThreadResult = await getThreadUseCase.execute(parameter);
@@ -160,5 +183,7 @@ describe('GetThreadUseCase', () => {
       .toBeCalledWith(parameter);
     expect(mockReplyRepository.getAllRepliesByCommentIds)
       .toBeCalledWith(commentIdParameter);
+    expect(mockUserCommentLikesRepository.getLikesNumberByCommentIds)
+      .toBeCalledWith(likesIdparameter);
   });
 });

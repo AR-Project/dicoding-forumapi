@@ -1,8 +1,14 @@
 class GetThreadUseCase {
-  constructor({ threadRepository, commentRepository, replyRepository }) {
+  constructor({
+    threadRepository,
+    commentRepository,
+    replyRepository,
+    userCommentLikesRepository,
+  }) {
     this._threadRepository = threadRepository;
     this._commentRepository = commentRepository;
     this._replyRepository = replyRepository;
+    this._userCommentLikesRepository = userCommentLikesRepository;
   }
 
   async execute(parameter) {
@@ -30,6 +36,16 @@ class GetThreadUseCase {
       const commentIndex = thread.comments
         .findIndex((comment) => comment.id === currentReply.commentId);
       thread.comments[commentIndex].replies.push(this._sanitizeReply(currentReply));
+    }
+
+    // prepare likeCount
+    const likeCounts = await this._userCommentLikesRepository
+      .getLikesNumberByCommentIds(_commentIds);
+    for (let i = 0; i < likeCounts.length; i += 1) {
+      const currentlikeCount = likeCounts[i];
+      const commentIndex = thread.comments
+        .findIndex((comment) => comment.id === currentlikeCount.commentId);
+      thread.comments[commentIndex].likeCount = currentlikeCount.count;
     }
 
     return thread;
