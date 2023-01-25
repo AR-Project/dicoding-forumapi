@@ -42,6 +42,11 @@ const ReplyRepositoryPostgres = require('./repository/ReplyRepositoryPostgres');
 const AddReplyUseCase = require('../Applications/use_case/AddReplyUseCase');
 const DeleteReplyUseCase = require('../Applications/use_case/DeleteReplyUseCase');
 
+// Like Comment Group
+const UserCommentLikesRepository = require('../Domains/userCommentLikes/UserCommentLikesRepository');
+const UserCommentLikesRepositoryPostgres = require('./repository/UserCommentLikesRepositoryPostgres');
+const ChangeCommentLikeUseCase = require('../Applications/use_case/ChangeCommentLikeUseCase');
+
 // creating container
 const container = createContainer();
 
@@ -125,6 +130,20 @@ container.register([
   {
     key: ReplyRepository.name,
     Class: ReplyRepositoryPostgres,
+    parameter: {
+      dependencies: [
+        {
+          concrete: pool,
+        },
+        {
+          concrete: nanoid,
+        },
+      ],
+    },
+  },
+  {
+    key: UserCommentLikesRepository.name,
+    Class: UserCommentLikesRepositoryPostgres,
     parameter: {
       dependencies: [
         {
@@ -243,6 +262,10 @@ container.register([
           name: 'replyRepository',
           internal: ReplyRepository.name,
         },
+        {
+          name: 'userCommentLikesRepository',
+          internal: UserCommentLikesRepository.name,
+        },
       ],
     },
   },
@@ -318,6 +341,27 @@ container.register([
         {
           name: 'threadRepository',
           internal: ThreadRepository.name,
+        },
+      ],
+    },
+  },
+  {
+    key: ChangeCommentLikeUseCase.name,
+    Class: ChangeCommentLikeUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        {
+          name: 'threadRepository',
+          internal: ThreadRepository.name,
+        },
+        {
+          name: 'commentRepository',
+          internal: CommentRepository.name,
+        },
+        {
+          name: 'userCommentLikesRepository',
+          internal: UserCommentLikesRepository.name,
         },
       ],
     },
