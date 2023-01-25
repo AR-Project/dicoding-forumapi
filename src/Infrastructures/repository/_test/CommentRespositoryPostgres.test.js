@@ -147,8 +147,8 @@ describe('CommentRepositoryPostgress', () => {
     });
   });
 
-  describe('verifyCommentOwner function', () => {
-    beforeEach(async () => {
+  describe('verifyCommentOwner function test #1', () => {
+    it('should throw AuthorizationError when comment.owner does NOT MATCH with userId', async () => {
       // Arrange
       const comment = {
         id: 'comment-123',
@@ -159,10 +159,7 @@ describe('CommentRepositoryPostgress', () => {
         is_deleted: false,
       };
       await CommentsTableTestHelper.addComment(comment);
-      await CommentsTableTestHelper.findCommentsById('comment-123');
-    });
-
-    it('should throw AuthorizationError when comment.owner does NOT MATCH with userId', async () => {
+      const testResult = await CommentsTableTestHelper.findCommentsById('comment-123');
       const invalidUserId = 'user-999';
       const validCommentId = 'comment-123';
 
@@ -171,11 +168,24 @@ describe('CommentRepositoryPostgress', () => {
       // await commentRepositoryPostgres.addComment(comment);
 
       // Action and Assert
+      expect(testResult).toHaveLength(1);
       expect(commentRepositoryPostgres.verifyCommentOwner(validCommentId, invalidUserId))
         .rejects.toThrowError(AuthorizationError);
     });
-
+  });
+  describe('verifyCommentOwner function test #2', () => {
     it('should not throw AuthorizationError when comment.owner MATCH with userId', async () => {
+      // Arrange
+      const comment = {
+        id: 'comment-123',
+        owner: 'user-123',
+        thread_id: 'thread-123',
+        content: 'comment content',
+        date: 'date-1',
+        is_deleted: false,
+      };
+      await CommentsTableTestHelper.addComment(comment);
+      const testResult = await CommentsTableTestHelper.findCommentsById('comment-123');
       const validUserId = 'user-123';
       const validCommentId = 'comment-123';
 
@@ -184,6 +194,7 @@ describe('CommentRepositoryPostgress', () => {
       // await commentRepositoryPostgres.addComment(comment);
 
       // Assert
+      expect(testResult).toHaveLength(1);
       expect(commentRepositoryPostgres.verifyCommentOwner(validCommentId, validUserId))
         .resolves.not.toThrowError(AuthorizationError);
     });

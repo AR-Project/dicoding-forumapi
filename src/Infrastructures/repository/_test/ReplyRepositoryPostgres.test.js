@@ -163,8 +163,8 @@ describe('ReplyRepositoryPostgres', () => {
     });
   });
 
-  describe('verifyReplyOwner function', () => {
-    beforeEach(async () => {
+  describe('verifyReplyOwner function test #1', () => {
+    it('should throw AuthorizationError when reply owner NOT MATCH with user ID', async () => {
       // Arrange
       const reply = {
         id: 'reply-123',
@@ -174,25 +174,36 @@ describe('ReplyRepositoryPostgres', () => {
         date: 'date-1',
         is_deleted: false,
       };
-
       await RepliesTableTestHelper.addReply(reply);
-      await RepliesTableTestHelper.findRepliesById('reply-123');
-    });
+      const helperResult = await RepliesTableTestHelper.findRepliesById('reply-123');
 
-    it('should throw AuthorizationError when reply owner NOT MATCH with user ID', async () => {
       const validReplyId = 'reply-123';
       const invalidUserId = 'user-999';
 
       const fakeIdGenerator = () => '123';
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
-      // await replyRepositoryPostgres.addReply(reply);
 
       // Assert
+      expect(helperResult).toHaveLength(1);
       expect(replyRepositoryPostgres.verifyReplyOwner(validReplyId, invalidUserId))
         .rejects.toThrowError(AuthorizationError);
     });
+  });
 
+  describe('verifyReplyOwner function test #2', () => {
     it('should NOT throw AuthorizationError when reply owner match with user ID', async () => {
+      // Arrange
+      const reply = {
+        id: 'reply-123',
+        owner: 'user-123',
+        commentId: 'comment-123',
+        content: 'reply content',
+        date: 'date-1',
+        is_deleted: false,
+      };
+      await RepliesTableTestHelper.addReply(reply);
+      const helperResult = await RepliesTableTestHelper.findRepliesById('reply-123');
+
       const validReplyId = 'reply-123';
       const validUserId = 'user-123';
 
@@ -200,6 +211,7 @@ describe('ReplyRepositoryPostgres', () => {
       const replyRepositoryPostgres = new ReplyRepositoryPostgres(pool, fakeIdGenerator);
 
       // Assert
+      expect(helperResult).toHaveLength(1);
       expect(replyRepositoryPostgres.verifyReplyOwner(validReplyId, validUserId))
         .resolves.not.toThrowError(AuthorizationError);
     });
