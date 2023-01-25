@@ -60,7 +60,7 @@ class UserCommentLikesRepositoryPostgres extends UserCommentLikesRepository {
     const result = await this._pool.query(query);
 
     const mappedResult = result.rows.map((row) => ({
-      comment_id: row.comment_id,
+      commentId: row.comment_id,
       count: parseInt(row.count, 10),
     }));
 

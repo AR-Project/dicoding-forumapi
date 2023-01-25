@@ -234,11 +234,11 @@ describe('UserCommentLikesRepositoryPostgres', () => {
       const parameter = ['comment-001', 'comment-002', 'comment-003'];
       const expectedResult = [
         {
-          comment_id: 'comment-001',
+          commentId: 'comment-001',
           count: 2,
         },
         {
-          comment_id: 'comment-002',
+          commentId: 'comment-002',
           count: 1,
         },
       ];
