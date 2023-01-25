@@ -159,8 +159,7 @@ describe('CommentRepositoryPostgress', () => {
         is_deleted: false,
       };
       await CommentsTableTestHelper.addComment(comment);
-      const result = await CommentsTableTestHelper.findCommentsById('comment-123');
-      console.log(result);
+      await CommentsTableTestHelper.findCommentsById('comment-123');
     });
 
     it('should throw AuthorizationError when comment.owner does NOT MATCH with userId', async () => {

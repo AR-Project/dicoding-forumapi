@@ -176,8 +176,7 @@ describe('ReplyRepositoryPostgres', () => {
       };
 
       await RepliesTableTestHelper.addReply(reply);
-      const result = await RepliesTableTestHelper.findRepliesById('reply-123');
-      console.log(result);
+      await RepliesTableTestHelper.findRepliesById('reply-123');
     });
 
     it('should throw AuthorizationError when reply owner NOT MATCH with user ID', async () => {
